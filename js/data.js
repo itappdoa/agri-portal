@@ -13,7 +13,7 @@
 
 const CONFIG = {
   // Paste your Google Sheet published CSV URL here:
-  SHEET_CSV_URL: "",   // e.g. "https://docs.google.com/spreadsheets/d/YOUR_ID/export?format=csv&gid=0"
+  SHEET_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQn5xVj61E_63PvxkFHfNfq3Pg-XpprcO2bEnonzQZv3OoQgvAscBWL_7wltvIsKRyI_WF85mk5Yrm4/pub?output=csv",   // e.g. "https://docs.google.com/spreadsheets/d/YOUR_ID/export?format=csv&gid=0"
 
   // Admin credentials (stored locally for demo; use Google OAuth for production)
   ADMIN_EMAIL: "admin@agri.kerala.gov.in",
