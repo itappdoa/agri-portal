@@ -1,7 +1,4 @@
-# Write panel.html carefully — NO nested template literals, NO Python escape issues
-# Using string concatenation everywhere in dynamic HTML to avoid JS parse errors
-
-content = """<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -10,19 +7,10 @@ content = """<!DOCTYPE html>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
 <style>
-:root {
-  --forest:#1a3a2a;--leaf:#2d6a4f;--sage:#52b788;--mint:#95d5b2;
-  --gold:#d4a017;--amber:#e8b84b;--cream:#f8f4e8;--sand:#ede8d8;
-  --ink:#0f1f15;--muted:#5a6e5e;--line:rgba(45,106,79,0.15);
-  --radius:14px;
-  --font-body:'Sora',system-ui,sans-serif;
-  --font-display:'DM Serif Display',Georgia,serif;
-}
+:root{--forest:#1a3a2a;--leaf:#2d6a4f;--sage:#52b788;--mint:#95d5b2;--gold:#d4a017;--cream:#f8f4e8;--sand:#ede8d8;--ink:#0f1f15;--muted:#5a6e5e;--line:rgba(45,106,79,0.15);--radius:14px;--font-body:'Sora',system-ui,sans-serif;--font-display:'DM Serif Display',Georgia,serif}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--font-body);background:#f0ede4;color:var(--ink);min-height:100vh}
 .layout{display:flex;min-height:100vh}
-
-/* Sidebar */
 .sidebar{width:240px;flex-shrink:0;background:var(--forest);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50}
 .sidebar-brand{padding:24px 20px;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:10px}
 .brand-icon{font-size:22px}
@@ -40,23 +28,17 @@ body{font-family:var(--font-body);background:#f0ede4;color:var(--ink);min-height
 .admin-role{font-size:10px;color:rgba(149,213,178,0.5)}
 .logout-btn{width:100%;padding:9px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:9px;color:rgba(149,213,178,0.7);font-family:var(--font-body);font-size:12px;cursor:pointer;transition:all 0.2s}
 .logout-btn:hover{background:rgba(220,38,38,0.15);color:#fca5a5;border-color:rgba(220,38,38,0.3)}
-
-/* Main */
 .main{margin-left:240px;flex:1;padding:32px}
 .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;gap:16px}
 .page-title{font-family:var(--font-display);font-size:28px;color:var(--forest)}
 .page-subtitle{font-size:13px;color:var(--muted);margin-top:2px}
 .add-btn{display:inline-flex;align-items:center;gap:8px;background:var(--forest);color:var(--cream);font-family:var(--font-body);font-size:13px;font-weight:600;padding:11px 20px;border:none;border-radius:11px;cursor:pointer;transition:all 0.2s;white-space:nowrap}
 .add-btn:hover{background:var(--leaf);transform:translateY(-1px)}
-
-/* Stats */
 .stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
 .stat-card{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:20px;display:flex;align-items:center;gap:14px}
 .stat-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
 .stat-val{font-size:24px;font-family:var(--font-display);color:var(--forest)}
 .stat-lbl{font-size:11px;color:var(--muted)}
-
-/* Table */
 .table-card{background:#fff;border:1.5px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:0 2px 16px rgba(26,58,42,0.06)}
 .table-toolbar{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1.5px solid var(--line)}
 .table-search{flex:1;padding:9px 14px;font-family:var(--font-body);font-size:13px;color:var(--forest);background:var(--cream);border:1.5px solid var(--line);border-radius:9px;outline:none;transition:all 0.2s}
@@ -73,24 +55,23 @@ tr:hover td{background:rgba(82,183,136,0.03)}
 .td-name{font-weight:600;font-size:13px;color:var(--forest)}
 .td-desc{font-size:12px;color:var(--muted);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .td-url{font-size:12px;color:var(--sage);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.cat-pill{display:inline-block;font-size:10px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;padding:3px 10px;border-radius:50px;background:rgba(82,183,136,0.12);color:var(--leaf);border:1px solid rgba(82,183,136,0.25);white-space:nowrap}
+.cat-pill{display:inline-block;font-size:10px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;padding:3px 10px;border-radius:50px;background:rgba(82,183,136,0.12);color:var(--leaf);border:1px solid rgba(82,183,136,0.25)}
 .action-btns{display:flex;gap:6px}
-.act-btn{padding:6px 12px;border-radius:7px;cursor:pointer;font-family:var(--font-body);font-size:11.5px;font-weight:600;border:1.5px solid;transition:all 0.2s;white-space:nowrap}
+.act-btn{padding:6px 12px;border-radius:7px;cursor:pointer;font-family:var(--font-body);font-size:11.5px;font-weight:600;border:1.5px solid;transition:all 0.2s}
 .act-edit{background:rgba(82,183,136,0.08);color:var(--leaf);border-color:rgba(82,183,136,0.3)}
 .act-edit:hover{background:rgba(82,183,136,0.18)}
 .act-del{background:rgba(220,38,38,0.06);color:#dc2626;border-color:rgba(220,38,38,0.2)}
 .act-del:hover{background:rgba(220,38,38,0.14)}
 .empty-row td{text-align:center;padding:48px;color:var(--muted);font-size:14px}
-
-/* Modal */
+.status-bar{font-size:11px;padding:6px 20px;background:rgba(82,183,136,0.07);border-bottom:1px solid var(--line);color:var(--muted);display:none}
+.status-bar.visible{display:block}
 .modal-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(15,31,21,0.55);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:24px}
 .modal-overlay.open{display:flex}
 .modal{background:#fff;border-radius:20px;padding:32px;width:100%;max-width:540px;box-shadow:0 24px 80px rgba(26,58,42,0.22);animation:slideUp 0.3s ease;max-height:90vh;overflow-y:auto}
 @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
 .modal-title{font-family:var(--font-display);font-size:22px;color:var(--forest)}
-.modal-close{width:32px;height:32px;border-radius:8px;background:var(--cream);border:1.5px solid var(--line);cursor:pointer;font-size:18px;color:var(--muted);display:flex;align-items:center;justify-content:center;transition:all 0.2s}
-.modal-close:hover{background:var(--sand)}
+.modal-close{width:32px;height:32px;border-radius:8px;background:var(--cream);border:1.5px solid var(--line);cursor:pointer;font-size:18px;color:var(--muted);display:flex;align-items:center;justify-content:center}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .form-group{margin-bottom:18px}
 .form-label{display:block;font-size:11px;font-weight:600;color:var(--forest);letter-spacing:0.05em;text-transform:uppercase;margin-bottom:7px}
@@ -100,19 +81,14 @@ tr:hover td{background:rgba(82,183,136,0.03)}
 .form-help{font-size:11px;color:var(--muted);margin-top:5px}
 .icon-preview-box{display:flex;align-items:center;gap:14px;padding:14px;background:var(--cream);border-radius:10px;margin-bottom:18px}
 .icon-preview{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;border:1.5px solid var(--line);flex-shrink:0;overflow:hidden}
-.icon-preview img{width:100%;height:100%;object-fit:cover;border-radius:10px}
-.icon-preview-text{font-size:12px;color:var(--muted)}
 .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:24px;padding-top:20px;border-top:1.5px solid var(--line)}
-.btn-cancel{padding:10px 20px;background:var(--cream);border:1.5px solid var(--line);border-radius:10px;font-family:var(--font-body);font-size:13px;color:var(--muted);cursor:pointer;transition:all 0.2s}
+.btn-cancel{padding:10px 20px;background:var(--cream);border:1.5px solid var(--line);border-radius:10px;font-family:var(--font-body);font-size:13px;color:var(--muted);cursor:pointer}
 .btn-cancel:hover{background:var(--sand)}
-.btn-save{padding:10px 24px;background:var(--forest);color:var(--cream);border:none;border-radius:10px;font-family:var(--font-body);font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s}
+.btn-save{padding:10px 24px;background:var(--forest);color:var(--cream);border:none;border-radius:10px;font-family:var(--font-body);font-size:13px;font-weight:600;cursor:pointer}
 .btn-save:hover{background:var(--leaf)}
-
-/* Toast */
-.toast{position:fixed;bottom:24px;right:24px;z-index:999;background:var(--forest);color:var(--cream);padding:14px 20px;border-radius:12px;font-size:13px;font-weight:500;box-shadow:0 8px 32px rgba(26,58,42,0.25);transform:translateY(80px);opacity:0;transition:all 0.3s ease;display:flex;align-items:center;gap:10px}
+.btn-save:disabled{opacity:0.6;cursor:not-allowed}
+.toast{position:fixed;bottom:24px;right:24px;z-index:999;background:var(--forest);color:var(--cream);padding:14px 20px;border-radius:12px;font-size:13px;font-weight:500;box-shadow:0 8px 32px rgba(26,58,42,0.25);transform:translateY(80px);opacity:0;transition:all 0.3s ease}
 .toast.show{transform:translateY(0);opacity:1}
-
-/* Confirm */
 .confirm-overlay{display:none;position:fixed;inset:0;z-index:300;background:rgba(15,31,21,0.6);backdrop-filter:blur(4px);align-items:center;justify-content:center}
 .confirm-overlay.open{display:flex}
 .confirm-box{background:#fff;border-radius:16px;padding:28px;width:340px;box-shadow:0 16px 60px rgba(26,58,42,0.2);text-align:center;animation:slideUp 0.25s ease}
@@ -121,17 +97,8 @@ tr:hover td{background:rgba(82,183,136,0.03)}
 .confirm-msg{font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.5}
 .confirm-btns{display:flex;gap:10px}
 .confirm-cancel{flex:1;padding:10px;background:var(--cream);border:1.5px solid var(--line);border-radius:10px;font-family:var(--font-body);font-size:13px;color:var(--muted);cursor:pointer}
-.confirm-cancel:hover{background:var(--sand)}
 .confirm-del{flex:1;padding:10px;background:#dc2626;color:#fff;border:none;border-radius:10px;font-family:var(--font-body);font-size:13px;font-weight:600;cursor:pointer}
-.confirm-del:hover{background:#b91c1c}
-
-@media(max-width:768px){
-  .sidebar{width:60px}
-  .brand-label,.admin-name,.admin-role,.nav-item span,.logout-btn{display:none}
-  .main{margin-left:60px;padding:20px 16px}
-  .stats-bar{grid-template-columns:repeat(2,1fr)}
-  .form-row{grid-template-columns:1fr}
-}
+@media(max-width:768px){.sidebar{width:60px}.brand-label,.admin-name,.admin-role,.nav-item span,.logout-btn{display:none}.main{margin-left:60px;padding:20px 16px}.stats-bar{grid-template-columns:repeat(2,1fr)}.form-row{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -140,95 +107,53 @@ tr:hover td{background:rgba(82,183,136,0.03)}
 <aside class="sidebar">
   <div class="sidebar-brand">
     <div class="brand-icon">&#127807;</div>
-    <div>
-      <span class="brand-label">Admin Panel</span>
-      <span class="brand-sub">AgriTech Portal</span>
-    </div>
+    <div><span class="brand-label">Admin Panel</span><span class="brand-sub">AgriTech Portal</span></div>
   </div>
   <nav class="sidebar-nav">
-    <button class="nav-item active" id="navApps">
-      <span class="ni">&#128203;</span><span>App Cards</span>
-    </button>
-    <button class="nav-item" id="navAdmins">
-      <span class="ni">&#128101;</span><span>Manage Admins</span>
-    </button>
-    <button class="nav-item" id="navPortal">
-      <span class="ni">&#127760;</span><span>View Portal</span>
-    </button>
+    <button class="nav-item active" id="navApps"><span class="ni">&#128203;</span><span>App Cards</span></button>
+    <button class="nav-item" id="navAdmins"><span class="ni">&#128101;</span><span>Manage Admins</span></button>
+    <button class="nav-item" id="navPortal"><span class="ni">&#127760;</span><span>View Portal</span></button>
   </nav>
   <div class="sidebar-foot">
     <div class="admin-info">
       <div class="admin-avatar" id="adminAvatar">A</div>
-      <div>
-        <div class="admin-name" id="adminName">Admin</div>
-        <div class="admin-role">Super Admin</div>
-      </div>
+      <div><div class="admin-name" id="adminName">Admin</div><div class="admin-role">Super Admin</div></div>
     </div>
-    <button class="logout-btn" id="btnLogout">&#8635; Sign Out</button>
+    <button class="logout-btn" id="btnLogout">Sign Out</button>
   </div>
 </aside>
 
 <main class="main">
-  <!-- APPS SECTION -->
   <div id="section-apps">
     <div class="page-header">
-      <div>
-        <div class="page-title">Application Cards</div>
-        <div class="page-subtitle">Manage all portal application entries</div>
-      </div>
+      <div><div class="page-title">Application Cards</div><div class="page-subtitle">Manage all portal application entries</div></div>
       <button class="add-btn" id="btnAddApp">&#65291; Add New App</button>
     </div>
     <div class="stats-bar">
-      <div class="stat-card">
-        <div class="stat-icon" style="background:rgba(45,106,79,0.1)">&#128203;</div>
-        <div><div class="stat-val" id="sTotal">0</div><div class="stat-lbl">Total Apps</div></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon" style="background:rgba(212,160,23,0.1)">&#128197;</div>
-        <div><div class="stat-val" id="sRecent">0</div><div class="stat-lbl">Added This Month</div></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon" style="background:rgba(82,183,136,0.1)">&#127991;</div>
-        <div><div class="stat-val" id="sCats">0</div><div class="stat-lbl">Categories</div></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon" style="background:rgba(99,102,241,0.1)">&#128100;</div>
-        <div><div class="stat-val" id="sAdmins">0</div><div class="stat-lbl">Admin Users</div></div>
-      </div>
+      <div class="stat-card"><div class="stat-icon" style="background:rgba(45,106,79,0.1)">&#128203;</div><div><div class="stat-val" id="sTotal">0</div><div class="stat-lbl">Total Apps</div></div></div>
+      <div class="stat-card"><div class="stat-icon" style="background:rgba(212,160,23,0.1)">&#128197;</div><div><div class="stat-val" id="sRecent">0</div><div class="stat-lbl">Added This Month</div></div></div>
+      <div class="stat-card"><div class="stat-icon" style="background:rgba(82,183,136,0.1)">&#127991;</div><div><div class="stat-val" id="sCats">0</div><div class="stat-lbl">Categories</div></div></div>
+      <div class="stat-card"><div class="stat-icon" style="background:rgba(99,102,241,0.1)">&#128100;</div><div><div class="stat-val" id="sAdmins">0</div><div class="stat-lbl">Admin Users</div></div></div>
     </div>
     <div class="table-card">
-      <div class="table-toolbar">
-        <input type="text" class="table-search" id="tableSearch" placeholder="Search apps...">
-      </div>
+      <div class="table-toolbar"><input type="text" class="table-search" id="tableSearch" placeholder="Search apps..."></div>
+      <div class="status-bar" id="statusBar"></div>
       <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Icon</th><th>App Name</th><th>Description</th>
-              <th>URL</th><th>Category</th><th>Date Added</th><th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="appTableBody"></tbody>
-        </table>
+        <table><thead><tr><th>Icon</th><th>App Name</th><th>Description</th><th>URL</th><th>Category</th><th>Date Added</th><th>Actions</th></tr></thead>
+        <tbody id="appTableBody"></tbody></table>
       </div>
     </div>
   </div>
 
-  <!-- ADMINS SECTION -->
   <div id="section-admins" style="display:none">
     <div class="page-header">
-      <div>
-        <div class="page-title">Manage Admin Users</div>
-        <div class="page-subtitle">Add or remove admin access</div>
-      </div>
+      <div><div class="page-title">Manage Admin Users</div><div class="page-subtitle">Add or remove admin access</div></div>
       <button class="add-btn" id="btnAddAdmin">&#65291; Add Admin</button>
     </div>
     <div class="table-card">
       <div class="table-wrap">
-        <table>
-          <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Actions</th></tr></thead>
-          <tbody id="adminTableBody"></tbody>
-        </table>
+        <table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Actions</th></tr></thead>
+        <tbody id="adminTableBody"></tbody></table>
       </div>
     </div>
   </div>
@@ -238,80 +163,31 @@ tr:hover td{background:rgba(82,183,136,0.03)}
 <!-- APP MODAL -->
 <div class="modal-overlay" id="appModal">
   <div class="modal">
-    <div class="modal-head">
-      <div class="modal-title" id="modalTitle">Add New Application</div>
-      <button class="modal-close" id="btnCloseAppModal">&#10005;</button>
-    </div>
-    <div class="icon-preview-box">
-      <div class="icon-preview" id="iconPreview"></div>
-      <div class="icon-preview-text"><strong>Icon Preview</strong><br>Enter an emoji or paste an image URL below</div>
-    </div>
+    <div class="modal-head"><div class="modal-title" id="modalTitle">Add New Application</div><button class="modal-close" id="btnCloseAppModal">&#10005;</button></div>
+    <div class="icon-preview-box"><div class="icon-preview" id="iconPreview"></div><div style="font-size:12px;color:var(--muted)"><strong>Icon Preview</strong><br>Enter an emoji or paste an image URL below</div></div>
     <input type="hidden" id="editId">
     <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">App Name *</label>
-        <input type="text" class="form-input" id="fName" placeholder="e.g. Crop Disease Tracker">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Category</label>
-        <select class="form-select" id="fCat">
-          <option value="">Select</option>
-          <option value="field">Field Tools</option>
-          <option value="finance">Finance</option>
-          <option value="monitoring">Monitoring</option>
-          <option value="hr">HR &amp; Admin</option>
-          <option value="reports">Reports</option>
-        </select>
+      <div class="form-group"><label class="form-label">App Name *</label><input type="text" class="form-input" id="fName" placeholder="e.g. Crop Disease Tracker"></div>
+      <div class="form-group"><label class="form-label">Category</label>
+        <select class="form-select" id="fCat"><option value="">Select</option><option value="field">Field Tools</option><option value="finance">Finance</option><option value="monitoring">Monitoring</option><option value="hr">HR &amp; Admin</option><option value="reports">Reports</option></select>
       </div>
     </div>
-    <div class="form-group">
-      <label class="form-label">Short Description *</label>
-      <textarea class="form-textarea" id="fDesc" placeholder="Describe what this app does"></textarea>
-    </div>
-    <div class="form-group">
-      <label class="form-label">App URL *</label>
-      <input type="url" class="form-input" id="fUrl" placeholder="https://...">
-      <div class="form-help">Full URL where this app is hosted</div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Icon / Image</label>
-      <input type="text" class="form-input" id="fIcon" placeholder="Emoji or image URL">
-      <div class="form-help">Leave empty to auto-generate an icon from initials</div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Date Added</label>
-      <input type="date" class="form-input" id="fDate">
-    </div>
-    <div class="modal-actions">
-      <button class="btn-cancel" id="btnCancelApp">Cancel</button>
-      <button class="btn-save" id="btnSaveApp">Save Application</button>
-    </div>
+    <div class="form-group"><label class="form-label">Short Description *</label><textarea class="form-textarea" id="fDesc" placeholder="Describe what this app does"></textarea></div>
+    <div class="form-group"><label class="form-label">App URL *</label><input type="url" class="form-input" id="fUrl" placeholder="https://..."><div class="form-help">Full URL where this app is hosted</div></div>
+    <div class="form-group"><label class="form-label">Icon / Image</label><input type="text" class="form-input" id="fIcon" placeholder="Emoji or image URL"><div class="form-help">Leave empty to auto-generate from initials</div></div>
+    <div class="form-group"><label class="form-label">Date Added</label><input type="date" class="form-input" id="fDate"></div>
+    <div class="modal-actions"><button class="btn-cancel" id="btnCancelApp">Cancel</button><button class="btn-save" id="btnSaveApp">Save Application</button></div>
   </div>
 </div>
 
 <!-- ADMIN MODAL -->
 <div class="modal-overlay" id="adminModal">
   <div class="modal">
-    <div class="modal-head">
-      <div class="modal-title">Add Admin User</div>
-      <button class="modal-close" id="btnCloseAdminModal">&#10005;</button>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Full Name</label>
-      <input type="text" class="form-input" id="aName" placeholder="e.g. Priya Nair">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Email</label>
-      <input type="email" class="form-input" id="aEmail" placeholder="priya@agri.kerala.gov.in">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Password</label>
-      <input type="password" class="form-input" id="aPass" placeholder="Set a strong password">
-    </div>
-    <div class="modal-actions">
-      <button class="btn-cancel" id="btnCancelAdmin">Cancel</button>
-      <button class="btn-save" id="btnSaveAdmin">Add Admin</button>
-    </div>
+    <div class="modal-head"><div class="modal-title">Add Admin User</div><button class="modal-close" id="btnCloseAdminModal">&#10005;</button></div>
+    <div class="form-group"><label class="form-label">Full Name</label><input type="text" class="form-input" id="aName" placeholder="e.g. Priya Nair"></div>
+    <div class="form-group"><label class="form-label">Email *</label><input type="email" class="form-input" id="aEmail" placeholder="priya@agri.kerala.gov.in"></div>
+    <div class="form-group"><label class="form-label">Password *</label><input type="password" class="form-input" id="aPass" placeholder="Set a strong password"></div>
+    <div class="modal-actions"><button class="btn-cancel" id="btnCancelAdmin">Cancel</button><button class="btn-save" id="btnSaveAdmin">Add Admin</button></div>
   </div>
 </div>
 
@@ -321,24 +197,18 @@ tr:hover td{background:rgba(82,183,136,0.03)}
     <div class="confirm-icon">&#128465;</div>
     <div class="confirm-title">Delete App?</div>
     <div class="confirm-msg" id="confirmMsg">This action cannot be undone.</div>
-    <div class="confirm-btns">
-      <button class="confirm-cancel" id="btnCancelDelete">Cancel</button>
-      <button class="confirm-del" id="btnConfirmDelete">Delete</button>
-    </div>
+    <div class="confirm-btns"><button class="confirm-cancel" id="btnCancelDelete">Cancel</button><button class="confirm-del" id="btnConfirmDelete">Delete</button></div>
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"><span id="toastMsg"></span></div>
-
-<!-- DATA LAYER -->
-<script src="data.js"></script>
 
 <script>
 // ============================================================
-// CONSTANTS — hardcoded so panel works even with original data.js
+// CONFIG — must match Code.gs
 // ============================================================
-var API_URL   = "https://script.google.com/macros/s/AKfycbwTFslOra6l_N082o_aYOnKqTEEYeB0DiFtkAbz-QyPZ7qWRCBl8zeYocqQQmONGHAGpA/exec";
+var GAS_URL   = "https://script.google.com/macros/s/AKfycbxhTkSROu8tBH6_vUJZiV4JU3s5iyy1fzqyaMAD-qGRksgqB0c_NlS5aTP2LrRDxBaatQ/exec";
+var CSV_URL   = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQn5xVj61E_63PvxkFHfNfq3Pg-XpprcO2bEnonzQZv3OoQgvAscBWL_7wltvIsKRyI_WF85mk5Yrm4/pub?output=csv";
 var WRITE_KEY = "agri-portal-write-2025";
 var DEFAULT_EMAIL = "admin@agri.kerala.gov.in";
 var DEFAULT_PASS  = "AgriAdmin@2025";
@@ -348,20 +218,18 @@ var ICON_COLS = [["#2d6a4f","#52b788"],["#1a3a2a","#95d5b2"],["#a05c00","#e8b84b
 // ============================================================
 // AUTH GUARD
 // ============================================================
+var SESSION = null;
 (function(){
-  var sess = localStorage.getItem("agri_admin_session");
-  if(!sess){ window.location.href="login.html"; return; }
-  try {
-    var s = JSON.parse(sess);
-    if(Date.now() - s.ts > 8*60*60*1000){
-      localStorage.removeItem("agri_admin_session");
-      window.location.href="login.html";
-      return;
-    }
-    var em = s.email || "";
+  var raw = localStorage.getItem("agri_admin_session");
+  if(!raw){ window.location.href="login.html"; return; }
+  try{
+    var s = JSON.parse(raw);
+    if(Date.now()-s.ts > 8*60*60*1000){ localStorage.removeItem("agri_admin_session"); window.location.href="login.html"; return; }
+    SESSION = s;
+    var em = s.email||"A";
     document.getElementById("adminAvatar").textContent = em[0].toUpperCase();
-    document.getElementById("adminName").textContent   = s.name || em.split("@")[0];
-  } catch(e){ window.location.href="login.html"; }
+    document.getElementById("adminName").textContent   = s.name||em.split("@")[0];
+  }catch(e){ window.location.href="login.html"; }
 })();
 
 // ============================================================
@@ -369,355 +237,343 @@ var ICON_COLS = [["#2d6a4f","#52b788"],["#1a3a2a","#95d5b2"],["#a05c00","#e8b84b
 // ============================================================
 var apps = [];
 var deleteTargetId = null;
-var editingId = null;
 
 // ============================================================
-// HELPERS
+// API CALLS
 // ============================================================
-function h(s){ // HTML-escape
-  return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+function apiPost(body, cb) {
+  // Google Apps Script requires mode:no-cors for cross-origin POST,
+  // but that makes the response opaque. We use text/plain content-type
+  // to avoid CORS preflight, then parse the response.
+  fetch(GAS_URL, {
+    method: "POST",
+    headers: {"Content-Type": "text/plain"},
+    body: JSON.stringify(body)
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){ cb(null, d); })
+  .catch(function(e){ cb(e, null); });
 }
-function iconColor(name){
-  var hash=0; var n=String(name||"A");
-  for(var i=0;i<n.length;i++) hash=(hash*31+n.charCodeAt(i))&0xffffff;
-  return ICON_COLS[Math.abs(hash)%ICON_COLS.length];
+
+function apiGet(action, cb) {
+  fetch(GAS_URL + "?action=" + action)
+  .then(function(r){ return r.json(); })
+  .then(function(d){ cb(null, d); })
+  .catch(function(e){ cb(e, null); });
 }
-function initials(name){
-  return String(name||"?").split(/\\s+/).slice(0,2).map(function(w){return w[0]||"";}).join("").toUpperCase()||"?";
+
+// ============================================================
+// LOAD APPS — tries GAS API first, falls back to CSV parsing
+// ============================================================
+function loadAppsFromAPI(cb) {
+  setStatus("Loading apps from Google Sheet...");
+  apiGet("getApps", function(err, data){
+    if(!err && data && data.apps && data.apps.length > 0){
+      cb(data.apps);
+    } else {
+      // Fallback: fetch the published CSV directly
+      setStatus("API unavailable, loading from CSV...");
+      loadAppsFromCSV(cb);
+    }
+  });
 }
-function buildIcon(icon, name){
-  var ic = String(icon||"").trim();
-  if(ic.indexOf("http")===0){
-    return '<div class="td-icon"><img src="'+h(ic)+'" alt="'+h(name)+'"></div>';
+
+function loadAppsFromCSV(cb) {
+  fetch(CSV_URL)
+  .then(function(r){ return r.text(); })
+  .then(function(text){
+    var rows = text.trim().split("\n");
+    if(rows.length < 2){ cb([]); return; }
+    // Parse headers — lowercase, no quotes
+    var headers = rows[0].split(",").map(function(h){ return h.trim().toLowerCase().replace(/['"]/g,""); });
+    var result = [];
+    for(var i=1;i<rows.length;i++){
+      var cols = splitCSVRow(rows[i]);
+      var obj  = {id: String(i)};
+      headers.forEach(function(h,idx){ obj[h] = (cols[idx]||"").trim(); });
+      if(obj.name||obj.app_name) result.push(obj);
+    }
+    cb(result);
+  })
+  .catch(function(){ cb([]); });
+}
+
+// Safe CSV row splitter — no lookbehind regex (works in all browsers)
+function splitCSVRow(row) {
+  var result = [];
+  var cur = "";
+  var inQ  = false;
+  for(var i=0;i<row.length;i++){
+    var ch = row[i];
+    if(ch==='"'){ inQ=!inQ; }
+    else if(ch===','&&!inQ){ result.push(cur); cur=""; }
+    else { cur+=ch; }
   }
-  if(ic.length>0 && ic.length<=2){
-    return '<div class="td-icon" style="font-size:20px;background:#ede8d8">'+ic+'</div>';
-  }
-  var cols = iconColor(name);
-  return '<div class="td-icon icon-auto" style="background:linear-gradient(135deg,'+cols[0]+','+cols[1]+')">'+initials(name)+'</div>';
+  result.push(cur);
+  return result;
 }
-function fmtDate(d){
-  try{ return new Date(d).toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"}); }
-  catch(e){ return d||""; }
+
+// ============================================================
+// INIT
+// ============================================================
+function init() {
+  document.getElementById("fDate").value = new Date().toISOString().split("T")[0];
+  loadAppsFromAPI(function(loaded){
+    apps = loaded;
+    renderTable();
+    renderAdminTable();
+    updateStats();
+    setStatus("");
+  });
 }
-function showToast(msg, isErr){
-  var t=document.getElementById("toast");
-  document.getElementById("toastMsg").textContent=msg;
-  t.style.background = isErr ? "#dc2626" : "#1a3a2a";
-  t.classList.add("show");
-  setTimeout(function(){ t.classList.remove("show"); }, 3000);
+
+function setStatus(msg) {
+  var el = document.getElementById("statusBar");
+  if(msg){ el.textContent = msg; el.classList.add("visible"); }
+  else    { el.classList.remove("visible"); }
 }
 
 // ============================================================
 // SECTION NAV
 // ============================================================
 function showSection(name){
-  document.getElementById("section-apps").style.display   = name==="apps"   ? "" : "none";
-  document.getElementById("section-admins").style.display = name==="admins" ? "" : "none";
+  document.getElementById("section-apps").style.display   = name==="apps"  ?"":"none";
+  document.getElementById("section-admins").style.display = name==="admins"?"":"none";
   document.getElementById("navApps").classList.toggle("active",   name==="apps");
   document.getElementById("navAdmins").classList.toggle("active", name==="admins");
-}
-
-// ============================================================
-// INIT
-// ============================================================
-async function init(){
-  // Always clear cached apps so panel fetches fresh from Google Sheet
-  localStorage.removeItem("agri_portal_apps");
-  apps = await loadApps();
-  renderTable();
-  renderAdminTable();
-  updateStats();
-  document.getElementById("fDate").value = new Date().toISOString().split("T")[0];
 }
 
 // ============================================================
 // STATS
 // ============================================================
 function updateStats(){
-  document.getElementById("sTotal").textContent  = apps.length;
+  document.getElementById("sTotal").textContent = apps.length;
   var m = new Date().toISOString().slice(0,7);
   document.getElementById("sRecent").textContent = apps.filter(function(a){ return (a.date||"").slice(0,7)===m; }).length;
-  var cats = {};
-  apps.forEach(function(a){ if(a.category) cats[a.category]=1; });
+  var cats={};
+  apps.forEach(function(a){ if(a.category)cats[a.category]=1; });
   document.getElementById("sCats").textContent   = Object.keys(cats).length;
   document.getElementById("sAdmins").textContent = getAdminList().length;
 }
 
 // ============================================================
+// HELPERS
+// ============================================================
+function h(s){ return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function iconColor(n){ var hash=0; n=String(n||"A"); for(var i=0;i<n.length;i++) hash=(hash*31+n.charCodeAt(i))&0xffffff; return ICON_COLS[Math.abs(hash)%ICON_COLS.length]; }
+function initials(n){ return String(n||"?").split(/\s+/).slice(0,2).map(function(w){return w[0]||"";}).join("").toUpperCase()||"?"; }
+function buildIcon(icon,name){
+  var ic=String(icon||"").trim();
+  if(ic.indexOf("http")===0) return '<div class="td-icon"><img src="'+h(ic)+'" alt="'+h(name)+'"></div>';
+  if(ic.length>0&&ic.length<=2) return '<div class="td-icon" style="font-size:20px;background:#ede8d8">'+ic+'</div>';
+  var c=iconColor(name);
+  return '<div class="td-icon icon-auto" style="background:linear-gradient(135deg,'+c[0]+','+c[1]+')">'+initials(name)+'</div>';
+}
+function fmtDate(d){ try{ return new Date(d).toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"}); }catch(e){return d||"";} }
+function showToast(msg,isErr){ var t=document.getElementById("toast"); document.getElementById("toastMsg").textContent=msg; t.style.background=isErr?"#dc2626":"#1a3a2a"; t.classList.add("show"); setTimeout(function(){t.classList.remove("show");},3000); }
+
+// ============================================================
 // APP TABLE
 // ============================================================
 function renderTable(){
-  var q = (document.getElementById("tableSearch").value||"").toLowerCase();
-  var filtered = apps.filter(function(a){
-    var name = (a.name||a.app_name||"").toLowerCase();
-    var desc = (a.desc||a.description||"").toLowerCase();
-    return !q || name.indexOf(q)>=0 || desc.indexOf(q)>=0;
-  });
-  var tbody = document.getElementById("appTableBody");
-  if(!filtered.length){
-    tbody.innerHTML = '<tr class="empty-row"><td colspan="7">No applications found. Add one using the button above.</td></tr>';
-    return;
-  }
-  var rows = "";
+  var q=(document.getElementById("tableSearch").value||"").toLowerCase();
+  var filtered=apps.filter(function(a){ var nm=(a.name||a.app_name||"").toLowerCase(); var ds=(a.desc||a.description||"").toLowerCase(); return !q||nm.indexOf(q)>=0||ds.indexOf(q)>=0; });
+  var tbody=document.getElementById("appTableBody");
+  if(!filtered.length){ tbody.innerHTML='<tr class="empty-row"><td colspan="7">No applications found. Add one using the button above.</td></tr>'; return; }
+  var rows="";
   for(var i=0;i<filtered.length;i++){
-    var a   = filtered[i];
-    var nm  = a.name||a.app_name||"Untitled";
-    var dsc = a.desc||a.description||"";
-    var url = a.url||"#";
-    var cat = a.category||"";
-    var dt  = a.date||a.created_date||"";
-    var cl  = CAT_MAP[cat]||cat;
-    var catHtml = cl ? '<span class="cat-pill">'+h(cl)+'</span>' : "";
-    rows += "<tr data-id=\""+h(a.id)+"\">";
-    rows += "<td>"+buildIcon(a.icon||a.image||"",nm)+"</td>";
-    rows += "<td><div class=\"td-name\">"+h(nm)+"</div></td>";
-    rows += "<td><div class=\"td-desc\" title=\""+h(dsc)+"\">"+h(dsc)+"</div></td>";
-    rows += "<td><div class=\"td-url\" title=\""+h(url)+"\">"+h(url)+"</div></td>";
-    rows += "<td>"+catHtml+"</td>";
-    rows += "<td>"+fmtDate(dt)+"</td>";
-    rows += "<td><div class=\"action-btns\"><button class=\"act-btn act-edit btn-edit-app\">Edit</button><button class=\"act-btn act-del btn-del-app\">Delete</button></div></td>";
-    rows += "</tr>";
+    var a=filtered[i];
+    var nm=a.name||a.app_name||"Untitled";
+    var ds=a.desc||a.description||"";
+    var url=a.url||"#";
+    var cat=a.category||"";
+    var cl=CAT_MAP[cat]||cat;
+    var catH=cl?'<span class="cat-pill">'+h(cl)+'</span>':"";
+    rows+='<tr data-id="'+h(a.id)+'">';
+    rows+="<td>"+buildIcon(a.icon||a.image||"",nm)+"</td>";
+    rows+='<td><div class="td-name">'+h(nm)+"</div></td>";
+    rows+='<td><div class="td-desc" title="'+h(ds)+'">'+h(ds)+"</div></td>";
+    rows+='<td><div class="td-url" title="'+h(url)+'">'+h(url)+"</div></td>";
+    rows+="<td>"+catH+"</td>";
+    rows+="<td>"+fmtDate(a.date||a.created_date||"")+"</td>";
+    rows+='<td><div class="action-btns"><button class="act-btn act-edit btn-edit-app">Edit</button><button class="act-btn act-del btn-del-app">Delete</button></div></td>';
+    rows+="</tr>";
   }
-  tbody.innerHTML = rows;
+  tbody.innerHTML=rows;
 }
 
 // ============================================================
 // APP MODAL
 // ============================================================
 function openModal(app){
-  editingId = app ? app.id : null;
-  document.getElementById("modalTitle").textContent = app ? "Edit Application" : "Add New Application";
-  document.getElementById("editId").value  = app ? (app.id||"") : "";
-  document.getElementById("fName").value   = app ? (app.name||app.app_name||"") : "";
-  document.getElementById("fDesc").value   = app ? (app.desc||app.description||"") : "";
-  document.getElementById("fUrl").value    = app ? (app.url||"") : "";
-  document.getElementById("fIcon").value   = app ? (app.icon||app.image||"") : "";
-  document.getElementById("fCat").value    = app ? (app.category||"") : "";
-  document.getElementById("fDate").value   = app ? (app.date||new Date().toISOString().split("T")[0]) : new Date().toISOString().split("T")[0];
+  document.getElementById("modalTitle").textContent = app?"Edit Application":"Add New Application";
+  document.getElementById("editId").value = app?(app.id||""):"";
+  document.getElementById("fName").value  = app?(app.name||app.app_name||""):"";
+  document.getElementById("fDesc").value  = app?(app.desc||app.description||""):"";
+  document.getElementById("fUrl").value   = app?(app.url||""):"";
+  document.getElementById("fIcon").value  = app?(app.icon||app.image||""):"";
+  document.getElementById("fCat").value   = app?(app.category||""):"";
+  document.getElementById("fDate").value  = app?(app.date||new Date().toISOString().split("T")[0]):new Date().toISOString().split("T")[0];
   updateIconPreview();
   document.getElementById("appModal").classList.add("open");
 }
-function closeModal(){
-  document.getElementById("appModal").classList.remove("open");
-  editingId = null;
-}
+function closeModal(){ document.getElementById("appModal").classList.remove("open"); }
 function updateIconPreview(){
-  var icon = document.getElementById("fIcon").value.trim();
-  var name = document.getElementById("fName").value.trim()||"App";
-  var box  = document.getElementById("iconPreview");
-  if(icon.indexOf("http")===0){
-    box.innerHTML = "<img src=\""+h(icon)+"\" style=\"width:100%;height:100%;object-fit:cover;border-radius:10px\">";
-    box.style.cssText="";
-  } else if(icon.length>0&&icon.length<=2){
-    box.innerHTML = icon;
-    box.style.background="#ede8d8"; box.style.fontSize="24px";
-  } else {
-    var cols = iconColor(name);
-    box.innerHTML = initials(name);
-    box.style.background="linear-gradient(135deg,"+cols[0]+","+cols[1]+")";
-    box.style.color="#fff"; box.style.fontSize="18px"; box.style.fontWeight="700";
-  }
+  var icon=document.getElementById("fIcon").value.trim();
+  var name=document.getElementById("fName").value.trim()||"App";
+  var box=document.getElementById("iconPreview");
+  if(icon.indexOf("http")===0){ box.innerHTML='<img src="'+h(icon)+'" style="width:100%;height:100%;object-fit:cover;border-radius:10px">'; box.style.cssText=""; }
+  else if(icon.length>0&&icon.length<=2){ box.innerHTML=icon; box.style.background="#ede8d8"; box.style.fontSize="24px"; }
+  else{ var c=iconColor(name); box.innerHTML=initials(name); box.style.background="linear-gradient(135deg,"+c[0]+","+c[1]+")"; box.style.color="#fff"; box.style.fontSize="18px"; box.style.fontWeight="700"; }
 }
+
 function saveApp(){
-  var name = document.getElementById("fName").value.trim();
-  var desc = document.getElementById("fDesc").value.trim();
-  var url  = document.getElementById("fUrl").value.trim();
-  if(!name){ showToast("App name is required",true); return; }
-  if(!desc){ showToast("Description is required",true); return; }
-  if(!url) { showToast("App URL is required",true); return; }
-  var id = document.getElementById("editId").value || String(Date.now());
-  var newApp = {
-    id:id, name:name, desc:desc, url:url,
-    icon:document.getElementById("fIcon").value.trim(),
-    category:document.getElementById("fCat").value,
-    date:document.getElementById("fDate").value
-  };
-  var idx = apps.findIndex(function(a){ return a.id===id; });
-  if(idx>=0){ apps[idx]=newApp; } else { apps.push(newApp); }
-  saveApps(apps);
-  closeModal();
-  renderTable();
-  updateStats();
-  showToast(idx>=0?"Application updated!":"Application added!");
+  var name=document.getElementById("fName").value.trim();
+  var desc=document.getElementById("fDesc").value.trim();
+  var url =document.getElementById("fUrl").value.trim();
+  if(!name){showToast("App name is required",true);return;}
+  if(!desc){showToast("Description is required",true);return;}
+  if(!url) {showToast("App URL is required",true);return;}
+  var existingId = document.getElementById("editId").value;
+  var appObj = { id:existingId||String(Date.now()), name:name, desc:desc, url:url, icon:document.getElementById("fIcon").value.trim(), category:document.getElementById("fCat").value, date:document.getElementById("fDate").value };
+  var btn = document.getElementById("btnSaveApp");
+  btn.disabled=true; btn.textContent="Saving...";
+  var action = existingId ? "updateApp" : "addApp";
+  var body   = { action:action, app:appObj, key:WRITE_KEY };
+  apiPost(body, function(err, data){
+    btn.disabled=false; btn.textContent="Save Application";
+    if(err||!data||data.error){
+      // API failed — save locally only
+      console.warn("API save failed, saving locally:", err||data);
+    }
+    // Update local state regardless of API result
+    if(existingId){
+      var idx=apps.findIndex(function(a){return a.id===existingId;});
+      if(idx>=0) apps[idx]=appObj;
+    } else {
+      if(data&&data.id) appObj.id=String(data.id); // use server-assigned ID if available
+      apps.push(appObj);
+    }
+    closeModal();
+    renderTable();
+    updateStats();
+    showToast(existingId?"Application updated!":"Application added!");
+  });
 }
 
 // ============================================================
 // DELETE
 // ============================================================
-function askDelete(id, name){
-  deleteTargetId = id;
-  document.getElementById("confirmMsg").textContent = '"'+name+'" will be permanently removed.';
-  document.getElementById("confirmOverlay").classList.add("open");
-}
-function closeConfirm(){
-  document.getElementById("confirmOverlay").classList.remove("open");
-  deleteTargetId=null;
-}
+function askDelete(id,name){ deleteTargetId=id; document.getElementById("confirmMsg").textContent='"'+name+'" will be permanently removed.'; document.getElementById("confirmOverlay").classList.add("open"); }
+function closeConfirm(){ document.getElementById("confirmOverlay").classList.remove("open"); deleteTargetId=null; }
 function confirmDelete(){
   if(!deleteTargetId) return;
-  apps = apps.filter(function(a){ return a.id!==deleteTargetId; });
-  saveApps(apps);
-  closeConfirm();
-  renderTable();
-  updateStats();
-  showToast("Application deleted");
+  var id=deleteTargetId;
+  apiPost({action:"deleteApp",id:id,key:WRITE_KEY}, function(err,data){
+    if(err||!data||data.error) console.warn("API delete failed:", err||data);
+  });
+  apps=apps.filter(function(a){return a.id!==id;});
+  closeConfirm(); renderTable(); updateStats(); showToast("Application deleted");
 }
 
 // ============================================================
 // ADMIN USERS
 // ============================================================
 function getAdminList(){
-  try{
-    var raw=localStorage.getItem("agri_admin_users");
-    if(raw) return JSON.parse(raw);
-  }catch(e){}
+  try{ var r=localStorage.getItem("agri_admin_users"); if(r) return JSON.parse(r); }catch(e){}
   return [{email:DEFAULT_EMAIL,password:DEFAULT_PASS,name:"Super Admin",role:"superadmin"}];
 }
-function saveAdminList(list){
-  localStorage.setItem("agri_admin_users", JSON.stringify(list));
-  try{
-    fetch(API_URL,{
-      method:"POST", mode:"no-cors",
-      headers:{"Content-Type":"text/plain"},
-      body:JSON.stringify({action:"setAdmins",admins:list,key:WRITE_KEY})
-    });
-  }catch(e){ console.warn("Admin sheet sync failed:",e); }
-}
+function saveAdminListLocal(list){ localStorage.setItem("agri_admin_users",JSON.stringify(list)); }
+
 function renderAdminTable(){
-  var admins = getAdminList();
-  var rows = "";
+  var admins=getAdminList();
+  var rows="";
   for(var i=0;i<admins.length;i++){
     var a=admins[i];
-    rows += "<tr>";
-    rows += "<td><strong>"+h(a.name||"Admin")+"</strong></td>";
-    rows += "<td>"+h(a.email)+"</td>";
-    rows += "<td><span class=\"cat-pill\">"+h(a.role||"admin")+"</span></td>";
-    if(i===0){
-      rows += "<td><span style=\"color:var(--muted);font-size:12px\">Primary admin</span></td>";
-    } else {
-      rows += "<td><button class=\"act-btn act-del btn-del-admin\" data-idx=\""+i+"\">Remove</button></td>";
-    }
-    rows += "</tr>";
+    rows+="<tr>";
+    rows+="<td><strong>"+h(a.name||"Admin")+"</strong></td>";
+    rows+="<td>"+h(a.email)+"</td>";
+    rows+='<td><span class="cat-pill">'+h(a.role||"admin")+"</span></td>";
+    if(i===0){ rows+='<td><span style="color:var(--muted);font-size:12px">Primary admin</span></td>'; }
+    else      { rows+='<td><button class="act-btn act-del btn-del-admin" data-idx="'+i+'" data-email="'+h(a.email)+'">Remove</button></td>'; }
+    rows+="</tr>";
   }
-  document.getElementById("adminTableBody").innerHTML = rows||"<tr><td colspan='4' style='text-align:center;padding:32px;color:var(--muted)'>No admins found</td></tr>";
+  document.getElementById("adminTableBody").innerHTML=rows||'<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--muted)">No admins yet</td></tr>';
 }
+
 function openAdminModal(){ document.getElementById("adminModal").classList.add("open"); }
 function closeAdminModal(){
   document.getElementById("adminModal").classList.remove("open");
-  document.getElementById("aName").value="";
-  document.getElementById("aEmail").value="";
-  document.getElementById("aPass").value="";
+  document.getElementById("aName").value=""; document.getElementById("aEmail").value=""; document.getElementById("aPass").value="";
 }
+
 function saveAdmin(){
-  var name  = document.getElementById("aName").value.trim();
-  var email = document.getElementById("aEmail").value.trim();
-  var pass  = document.getElementById("aPass").value.trim();
-  if(!email){ showToast("Email is required",true); return; }
-  if(!pass) { showToast("Password is required",true); return; }
-  var admins  = getAdminList();
-  var exIdx   = -1;
-  for(var i=0;i<admins.length;i++){ if(admins[i].email===email){ exIdx=i; break; } }
-  if(exIdx>=0){
-    admins[exIdx].password=pass;
-    if(name) admins[exIdx].name=name;
-    saveAdminList(admins);
-    closeAdminModal();
-    renderAdminTable();
-    updateStats();
-    showToast("Admin password updated!");
-  } else {
-    admins.push({name:name||email,email:email,password:pass,role:"admin"});
-    saveAdminList(admins);
-    closeAdminModal();
-    renderAdminTable();
-    updateStats();
-    showToast("Admin added!");
-  }
+  var name =document.getElementById("aName").value.trim();
+  var email=document.getElementById("aEmail").value.trim();
+  var pass =document.getElementById("aPass").value.trim();
+  if(!email){showToast("Email is required",true);return;}
+  if(!pass) {showToast("Password is required",true);return;}
+  var btn=document.getElementById("btnSaveAdmin");
+  btn.disabled=true; btn.textContent="Saving...";
+  var adminObj={name:name||email, email:email, password:pass, role:"admin"};
+  // POST to GAS API — creates/updates admin in the Admins sheet
+  apiPost({action:"addAdmin", admin:adminObj, key:WRITE_KEY}, function(err,data){
+    btn.disabled=false; btn.textContent="Add Admin";
+    if(err||!data||data.error){ console.warn("API addAdmin failed:", err||data); showToast("Saved locally only — check GAS deployment",true); }
+    else { showToast(data.updated?"Admin password updated!":"Admin added!"); }
+    // Also save locally
+    var admins=getAdminList();
+    var idx=-1; for(var i=0;i<admins.length;i++){if(admins[i].email===email){idx=i;break;}}
+    if(idx>=0){admins[idx].password=pass; if(name)admins[idx].name=name;} else {admins.push(adminObj);}
+    saveAdminListLocal(admins);
+    closeAdminModal(); renderAdminTable(); updateStats();
+  });
 }
 
 // ============================================================
-// EVENT LISTENERS — all wired here, zero inline onclick
+// EVENT LISTENERS
 // ============================================================
 document.addEventListener("DOMContentLoaded", function(){
-
-  // Sidebar nav
   document.getElementById("navApps").addEventListener("click",   function(){ showSection("apps"); });
   document.getElementById("navAdmins").addEventListener("click", function(){ showSection("admins"); });
   document.getElementById("navPortal").addEventListener("click", function(){ window.open("index.html","_blank"); });
-  document.getElementById("btnLogout").addEventListener("click", function(){
-    localStorage.removeItem("agri_admin_session");
-    window.location.href="login.html";
-  });
-
-  // Add buttons
+  document.getElementById("btnLogout").addEventListener("click", function(){ localStorage.removeItem("agri_admin_session"); window.location.href="login.html"; });
   document.getElementById("btnAddApp").addEventListener("click",   function(){ openModal(null); });
   document.getElementById("btnAddAdmin").addEventListener("click", function(){ openAdminModal(); });
-
-  // App modal
   document.getElementById("btnCloseAppModal").addEventListener("click", closeModal);
   document.getElementById("btnCancelApp").addEventListener("click",     closeModal);
   document.getElementById("btnSaveApp").addEventListener("click",       saveApp);
-  document.getElementById("fIcon").addEventListener("input",            updateIconPreview);
+  document.getElementById("fIcon").addEventListener("input", updateIconPreview);
   document.getElementById("appModal").addEventListener("click", function(e){ if(e.target===this) closeModal(); });
-
-  // Admin modal
   document.getElementById("btnCloseAdminModal").addEventListener("click", closeAdminModal);
   document.getElementById("btnCancelAdmin").addEventListener("click",     closeAdminModal);
   document.getElementById("btnSaveAdmin").addEventListener("click",       saveAdmin);
   document.getElementById("adminModal").addEventListener("click", function(e){ if(e.target===this) closeAdminModal(); });
-
-  // Delete confirm
   document.getElementById("btnCancelDelete").addEventListener("click",  closeConfirm);
   document.getElementById("btnConfirmDelete").addEventListener("click", confirmDelete);
-
-  // Table search
   document.getElementById("tableSearch").addEventListener("input", renderTable);
-
-  // Event delegation for Edit / Delete buttons in app table
   document.getElementById("appTableBody").addEventListener("click", function(e){
-    var row = e.target.closest("tr[data-id]");
-    if(!row) return;
-    var id = row.getAttribute("data-id");
+    var row=e.target.closest("tr[data-id]"); if(!row) return;
+    var id=row.getAttribute("data-id");
     if(e.target.classList.contains("btn-edit-app")){
-      var app = null;
-      for(var i=0;i<apps.length;i++){ if(apps[i].id===id){ app=apps[i]; break; } }
-      if(app) openModal(app);
+      var app=null; for(var i=0;i<apps.length;i++){if(apps[i].id===id){app=apps[i];break;}} if(app) openModal(app);
     }
     if(e.target.classList.contains("btn-del-app")){
-      var nm = "";
-      for(var i=0;i<apps.length;i++){ if(apps[i].id===id){ nm=apps[i].name||apps[i].app_name||""; break; } }
-      askDelete(id, nm);
+      var nm=""; for(var i=0;i<apps.length;i++){if(apps[i].id===id){nm=apps[i].name||apps[i].app_name||"";break;}} askDelete(id,nm);
     }
   });
-
-  // Event delegation for Remove button in admin table
   document.getElementById("adminTableBody").addEventListener("click", function(e){
     if(e.target.classList.contains("btn-del-admin")){
-      var idx = parseInt(e.target.getAttribute("data-idx"),10);
-      if(isNaN(idx)) return;
-      var admins = getAdminList();
-      admins.splice(idx,1);
-      saveAdminList(admins);
-      renderAdminTable();
-      updateStats();
-      showToast("Admin removed");
+      var idx=parseInt(e.target.getAttribute("data-idx"),10);
+      var email=e.target.getAttribute("data-email");
+      apiPost({action:"deleteAdmin",email:email,key:WRITE_KEY}, function(err,data){
+        if(err||!data||data.error) console.warn("API deleteAdmin failed:", err||data);
+      });
+      var admins=getAdminList(); admins.splice(idx,1); saveAdminListLocal(admins); renderAdminTable(); updateStats(); showToast("Admin removed");
     }
   });
-
-  // Start
   init();
 });
 </script>
 </body>
-</html>"""
-
-with open("/home/user/agri-portal-fix/panel.html", "w") as f:
-    f.write(content)
-
-print("Written:", len(content), "bytes")
-# Quick sanity check - count script tags and look for backtick template literals
-bt_count = content.count("`")
-print("Backtick count:", bt_count, "(should be 0)")
-print("DOMContentLoaded present:", "DOMContentLoaded" in content)
-print("onclick= present:", "onclick=" in content, "(should be False)")
+</html>
