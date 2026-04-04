@@ -24,7 +24,7 @@ body{font-family:var(--font-body);background:#f0ede4;color:var(--ink);min-height
 .sidebar-foot{padding:16px 10px;border-top:1px solid rgba(255,255,255,0.08)}
 .admin-info{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,0.05);border-radius:10px;margin-bottom:8px}
 .admin-avatar{width:32px;height:32px;background:linear-gradient(135deg,var(--sage),var(--gold));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
-.admin-name{font-size:12px;color:var(--cream);font-weight:500}
+.admin-name{font-size:12px;color:var(--cream);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:130px}
 .admin-role{font-size:10px;color:rgba(149,213,178,0.5)}
 .logout-btn{width:100%;padding:9px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:9px;color:rgba(149,213,178,0.7);font-family:var(--font-body);font-size:12px;cursor:pointer;transition:all 0.2s}
 .logout-btn:hover{background:rgba(220,38,38,0.15);color:#fca5a5;border-color:rgba(220,38,38,0.3)}
@@ -204,9 +204,6 @@ tr:hover td{background:rgba(82,183,136,0.03)}
 <div class="toast" id="toast"><span id="toastMsg"></span></div>
 
 <script>
-// ============================================================
-// CONFIG — must match Code.gs
-// ============================================================
 var GAS_URL   = "https://script.google.com/macros/s/AKfycbxhTkSROu8tBH6_vUJZiV4JU3s5iyy1fzqyaMAD-qGRksgqB0c_NlS5aTP2LrRDxBaatQ/exec";
 var CSV_URL   = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQn5xVj61E_63PvxkFHfNfq3Pg-XpprcO2bEnonzQZv3OoQgvAscBWL_7wltvIsKRyI_WF85mk5Yrm4/pub?output=csv";
 var WRITE_KEY = "agri-portal-write-2025";
@@ -215,9 +212,7 @@ var DEFAULT_PASS  = "AgriAdmin@2025";
 var CAT_MAP = {field:"Field Tools",finance:"Finance",monitoring:"Monitoring",hr:"HR & Admin",reports:"Reports"};
 var ICON_COLS = [["#2d6a4f","#52b788"],["#1a3a2a","#95d5b2"],["#a05c00","#e8b84b"],["#3a6b1a","#8bc34a"],["#1a5a4a","#48b89a"]];
 
-// ============================================================
-// AUTH GUARD
-// ============================================================
+// ── AUTH GUARD ──────────────────────────────────────────────
 var SESSION = null;
 (function(){
   var raw = localStorage.getItem("agri_admin_session");
@@ -226,116 +221,85 @@ var SESSION = null;
     var s = JSON.parse(raw);
     if(Date.now()-s.ts > 8*60*60*1000){ localStorage.removeItem("agri_admin_session"); window.location.href="login.html"; return; }
     SESSION = s;
-    var em = s.email||"A";
-    document.getElementById("adminAvatar").textContent = em[0].toUpperCase();
-    document.getElementById("adminName").textContent   = s.name||em.split("@")[0];
+    var em = s.email || "Admin";
+    // Sanitise name — if it looks like a base64 token (long, no spaces), use email prefix
+    var displayName = s.name || "";
+    if(!displayName || displayName.length > 40 || (displayName.indexOf(" ") < 0 && displayName.length > 20)){
+      displayName = em.split("@")[0];
+    }
+    document.getElementById("adminAvatar").textContent = displayName[0].toUpperCase();
+    document.getElementById("adminName").textContent   = displayName;
   }catch(e){ window.location.href="login.html"; }
 })();
 
-// ============================================================
-// STATE
-// ============================================================
-var apps = [];
+// ── STATE ───────────────────────────────────────────────────
+var apps      = [];
+var adminList = null;
 var deleteTargetId = null;
 
-// ============================================================
-// API CALLS
-// ============================================================
-function apiPost(body, cb) {
-  // Google Apps Script requires mode:no-cors for cross-origin POST,
-  // but that makes the response opaque. We use text/plain content-type
-  // to avoid CORS preflight, then parse the response.
-  fetch(GAS_URL, {
-    method: "POST",
-    headers: {"Content-Type": "text/plain"},
-    body: JSON.stringify(body)
-  })
-  .then(function(r){ return r.json(); })
-  .then(function(d){ cb(null, d); })
-  .catch(function(e){ cb(e, null); });
+// ── API ─────────────────────────────────────────────────────
+function apiPost(body, cb){
+  fetch(GAS_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify(body)})
+  .then(function(r){return r.json();}).then(function(d){cb(null,d);}).catch(function(e){cb(e,null);});
+}
+function apiGet(action, cb){
+  fetch(GAS_URL+"?action="+action)
+  .then(function(r){return r.json();}).then(function(d){cb(null,d);}).catch(function(e){cb(e,null);});
 }
 
-function apiGet(action, cb) {
-  fetch(GAS_URL + "?action=" + action)
-  .then(function(r){ return r.json(); })
-  .then(function(d){ cb(null, d); })
-  .catch(function(e){ cb(e, null); });
-}
-
-// ============================================================
-// LOAD APPS — tries GAS API first, falls back to CSV parsing
-// ============================================================
-function loadAppsFromAPI(cb) {
+// ── LOAD APPS ───────────────────────────────────────────────
+function loadAppsFromAPI(cb){
   setStatus("Loading apps from Google Sheet...");
-  apiGet("getApps", function(err, data){
-    if(!err && data && data.apps && data.apps.length > 0){
-      cb(data.apps);
-    } else {
-      // Fallback: fetch the published CSV directly
-      setStatus("API unavailable, loading from CSV...");
-      loadAppsFromCSV(cb);
-    }
+  apiGet("getApps",function(err,data){
+    if(!err&&data&&data.apps&&data.apps.length>0){ cb(data.apps); }
+    else{ setStatus("Loading from CSV..."); loadAppsFromCSV(cb); }
   });
 }
-
-function loadAppsFromCSV(cb) {
-  fetch(CSV_URL)
-  .then(function(r){ return r.text(); })
-  .then(function(text){
-    var rows = text.trim().split("\n");
-    if(rows.length < 2){ cb([]); return; }
-    // Parse headers — lowercase, no quotes
-    var headers = rows[0].split(",").map(function(h){ return h.trim().toLowerCase().replace(/['"]/g,""); });
-    var result = [];
+function loadAppsFromCSV(cb){
+  fetch(CSV_URL).then(function(r){return r.text();}).then(function(text){
+    var rows=text.trim().split("\n");
+    if(rows.length<2){cb([]);return;}
+    var headers=rows[0].split(",").map(function(h){return h.trim().toLowerCase().replace(/['"]/g,"");});
+    var result=[];
     for(var i=1;i<rows.length;i++){
-      var cols = splitCSVRow(rows[i]);
-      var obj  = {id: String(i)};
-      headers.forEach(function(h,idx){ obj[h] = (cols[idx]||"").trim(); });
+      var cols=splitCSVRow(rows[i]);
+      var obj={id:String(i)};
+      headers.forEach(function(h,idx){obj[h]=(cols[idx]||"").trim();});
       if(obj.name||obj.app_name) result.push(obj);
     }
     cb(result);
-  })
-  .catch(function(){ cb([]); });
+  }).catch(function(){cb([]);});
 }
-
-// Safe CSV row splitter — no lookbehind regex (works in all browsers)
-function splitCSVRow(row) {
-  var result = [];
-  var cur = "";
-  var inQ  = false;
+function splitCSVRow(row){
+  var result=[],cur="",inQ=false;
   for(var i=0;i<row.length;i++){
-    var ch = row[i];
-    if(ch==='"'){ inQ=!inQ; }
-    else if(ch===','&&!inQ){ result.push(cur); cur=""; }
-    else { cur+=ch; }
+    var ch=row[i];
+    if(ch==='"'){inQ=!inQ;}
+    else if(ch===','&&!inQ){result.push(cur);cur="";}
+    else{cur+=ch;}
   }
   result.push(cur);
   return result;
 }
 
-// ============================================================
-// INIT
-// ============================================================
-function init() {
-  document.getElementById("fDate").value = new Date().toISOString().split("T")[0];
+// ── INIT ────────────────────────────────────────────────────
+function init(){
+  document.getElementById("fDate").value=new Date().toISOString().split("T")[0];
   loadAppsFromAPI(function(loaded){
-    apps = loaded;
+    apps=loaded;
     renderTable();
     renderAdminTable();
     updateStats();
     setStatus("");
   });
 }
-
-function setStatus(msg) {
-  var el = document.getElementById("statusBar");
-  if(msg){ el.textContent = msg; el.classList.add("visible"); }
-  else    { el.classList.remove("visible"); }
+function setStatus(msg){
+  var el=document.getElementById("statusBar");
+  if(msg){el.textContent=msg;el.classList.add("visible");}
+  else{el.classList.remove("visible");}
 }
 
-// ============================================================
-// SECTION NAV
-// ============================================================
+// ── SECTION NAV ─────────────────────────────────────────────
 function showSection(name){
   document.getElementById("section-apps").style.display   = name==="apps"  ?"":"none";
   document.getElementById("section-admins").style.display = name==="admins"?"":"none";
@@ -343,25 +307,20 @@ function showSection(name){
   document.getElementById("navAdmins").classList.toggle("active", name==="admins");
 }
 
-// ============================================================
-// STATS
-// ============================================================
+// ── STATS ───────────────────────────────────────────────────
 function updateStats(){
-  document.getElementById("sTotal").textContent = apps.length;
-  var m = new Date().toISOString().slice(0,7);
-  document.getElementById("sRecent").textContent = apps.filter(function(a){ return (a.date||"").slice(0,7)===m; }).length;
+  document.getElementById("sTotal").textContent=apps.length;
+  var m=new Date().toISOString().slice(0,7);
+  document.getElementById("sRecent").textContent=apps.filter(function(a){return (a.date||"").slice(0,7)===m;}).length;
   var cats={};
-  apps.forEach(function(a){ if(a.category)cats[a.category]=1; });
-  document.getElementById("sCats").textContent   = Object.keys(cats).length;
-  document.getElementById("sAdmins").textContent = getAdminList().length;
+  apps.forEach(function(a){if(a.category)cats[a.category]=1;});
+  document.getElementById("sCats").textContent=Object.keys(cats).length;
 }
 
-// ============================================================
-// HELPERS
-// ============================================================
-function h(s){ return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
-function iconColor(n){ var hash=0; n=String(n||"A"); for(var i=0;i<n.length;i++) hash=(hash*31+n.charCodeAt(i))&0xffffff; return ICON_COLS[Math.abs(hash)%ICON_COLS.length]; }
-function initials(n){ return String(n||"?").split(/\s+/).slice(0,2).map(function(w){return w[0]||"";}).join("").toUpperCase()||"?"; }
+// ── HELPERS ─────────────────────────────────────────────────
+function h(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function iconColor(n){var hash=0;n=String(n||"A");for(var i=0;i<n.length;i++)hash=(hash*31+n.charCodeAt(i))&0xffffff;return ICON_COLS[Math.abs(hash)%ICON_COLS.length];}
+function initials(n){return String(n||"?").split(/\s+/).slice(0,2).map(function(w){return w[0]||"";}).join("").toUpperCase()||"?";}
 function buildIcon(icon,name){
   var ic=String(icon||"").trim();
   if(ic.indexOf("http")===0) return '<div class="td-icon"><img src="'+h(ic)+'" alt="'+h(name)+'"></div>';
@@ -369,17 +328,15 @@ function buildIcon(icon,name){
   var c=iconColor(name);
   return '<div class="td-icon icon-auto" style="background:linear-gradient(135deg,'+c[0]+','+c[1]+')">'+initials(name)+'</div>';
 }
-function fmtDate(d){ try{ return new Date(d).toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"}); }catch(e){return d||"";} }
-function showToast(msg,isErr){ var t=document.getElementById("toast"); document.getElementById("toastMsg").textContent=msg; t.style.background=isErr?"#dc2626":"#1a3a2a"; t.classList.add("show"); setTimeout(function(){t.classList.remove("show");},3000); }
+function fmtDate(d){try{return new Date(d).toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"});}catch(e){return d||"";}}
+function showToast(msg,isErr){var t=document.getElementById("toast");document.getElementById("toastMsg").textContent=msg;t.style.background=isErr?"#dc2626":"#1a3a2a";t.classList.add("show");setTimeout(function(){t.classList.remove("show");},3000);}
 
-// ============================================================
-// APP TABLE
-// ============================================================
+// ── APP TABLE ───────────────────────────────────────────────
 function renderTable(){
   var q=(document.getElementById("tableSearch").value||"").toLowerCase();
-  var filtered=apps.filter(function(a){ var nm=(a.name||a.app_name||"").toLowerCase(); var ds=(a.desc||a.description||"").toLowerCase(); return !q||nm.indexOf(q)>=0||ds.indexOf(q)>=0; });
+  var filtered=apps.filter(function(a){var nm=(a.name||a.app_name||"").toLowerCase();var ds=(a.desc||a.description||"").toLowerCase();return !q||nm.indexOf(q)>=0||ds.indexOf(q)>=0;});
   var tbody=document.getElementById("appTableBody");
-  if(!filtered.length){ tbody.innerHTML='<tr class="empty-row"><td colspan="7">No applications found. Add one using the button above.</td></tr>'; return; }
+  if(!filtered.length){tbody.innerHTML='<tr class="empty-row"><td colspan="7">No applications found. Click "+ Add New App" to get started.</td></tr>';return;}
   var rows="";
   for(var i=0;i<filtered.length;i++){
     var a=filtered[i];
@@ -402,174 +359,156 @@ function renderTable(){
   tbody.innerHTML=rows;
 }
 
-// ============================================================
-// APP MODAL
-// ============================================================
+// ── APP MODAL ───────────────────────────────────────────────
 function openModal(app){
-  document.getElementById("modalTitle").textContent = app?"Edit Application":"Add New Application";
-  document.getElementById("editId").value = app?(app.id||""):"";
-  document.getElementById("fName").value  = app?(app.name||app.app_name||""):"";
-  document.getElementById("fDesc").value  = app?(app.desc||app.description||""):"";
-  document.getElementById("fUrl").value   = app?(app.url||""):"";
-  document.getElementById("fIcon").value  = app?(app.icon||app.image||""):"";
-  document.getElementById("fCat").value   = app?(app.category||""):"";
-  document.getElementById("fDate").value  = app?(app.date||new Date().toISOString().split("T")[0]):new Date().toISOString().split("T")[0];
+  document.getElementById("modalTitle").textContent=app?"Edit Application":"Add New Application";
+  document.getElementById("editId").value=app?(app.id||""):"";
+  document.getElementById("fName").value=app?(app.name||app.app_name||""):"";
+  document.getElementById("fDesc").value=app?(app.desc||app.description||""):"";
+  document.getElementById("fUrl").value=app?(app.url||""):"";
+  document.getElementById("fIcon").value=app?(app.icon||app.image||""):"";
+  document.getElementById("fCat").value=app?(app.category||""):"";
+  document.getElementById("fDate").value=app?(app.date||new Date().toISOString().split("T")[0]):new Date().toISOString().split("T")[0];
   updateIconPreview();
   document.getElementById("appModal").classList.add("open");
 }
-function closeModal(){ document.getElementById("appModal").classList.remove("open"); }
+function closeModal(){document.getElementById("appModal").classList.remove("open");}
 function updateIconPreview(){
   var icon=document.getElementById("fIcon").value.trim();
   var name=document.getElementById("fName").value.trim()||"App";
   var box=document.getElementById("iconPreview");
-  if(icon.indexOf("http")===0){ box.innerHTML='<img src="'+h(icon)+'" style="width:100%;height:100%;object-fit:cover;border-radius:10px">'; box.style.cssText=""; }
-  else if(icon.length>0&&icon.length<=2){ box.innerHTML=icon; box.style.background="#ede8d8"; box.style.fontSize="24px"; }
-  else{ var c=iconColor(name); box.innerHTML=initials(name); box.style.background="linear-gradient(135deg,"+c[0]+","+c[1]+")"; box.style.color="#fff"; box.style.fontSize="18px"; box.style.fontWeight="700"; }
+  if(icon.indexOf("http")===0){box.innerHTML='<img src="'+h(icon)+'" style="width:100%;height:100%;object-fit:cover;border-radius:10px">';box.style.cssText="";}
+  else if(icon.length>0&&icon.length<=2){box.innerHTML=icon;box.style.background="#ede8d8";box.style.fontSize="24px";}
+  else{var c=iconColor(name);box.innerHTML=initials(name);box.style.background="linear-gradient(135deg,"+c[0]+","+c[1]+")";box.style.color="#fff";box.style.fontSize="18px";box.style.fontWeight="700";}
 }
-
 function saveApp(){
   var name=document.getElementById("fName").value.trim();
   var desc=document.getElementById("fDesc").value.trim();
-  var url =document.getElementById("fUrl").value.trim();
+  var url=document.getElementById("fUrl").value.trim();
   if(!name){showToast("App name is required",true);return;}
   if(!desc){showToast("Description is required",true);return;}
-  if(!url) {showToast("App URL is required",true);return;}
-  var existingId = document.getElementById("editId").value;
-  var appObj = { id:existingId||String(Date.now()), name:name, desc:desc, url:url, icon:document.getElementById("fIcon").value.trim(), category:document.getElementById("fCat").value, date:document.getElementById("fDate").value };
-  var btn = document.getElementById("btnSaveApp");
-  btn.disabled=true; btn.textContent="Saving...";
-  var action = existingId ? "updateApp" : "addApp";
-  var body   = { action:action, app:appObj, key:WRITE_KEY };
-  apiPost(body, function(err, data){
-    btn.disabled=false; btn.textContent="Save Application";
-    if(err||!data||data.error){
-      // API failed — save locally only
-      console.warn("API save failed, saving locally:", err||data);
-    }
-    // Update local state regardless of API result
-    if(existingId){
-      var idx=apps.findIndex(function(a){return a.id===existingId;});
-      if(idx>=0) apps[idx]=appObj;
-    } else {
-      if(data&&data.id) appObj.id=String(data.id); // use server-assigned ID if available
-      apps.push(appObj);
-    }
-    closeModal();
-    renderTable();
-    updateStats();
+  if(!url){showToast("App URL is required",true);return;}
+  var existingId=document.getElementById("editId").value;
+  var appObj={id:existingId||String(Date.now()),name:name,desc:desc,url:url,icon:document.getElementById("fIcon").value.trim(),category:document.getElementById("fCat").value,date:document.getElementById("fDate").value};
+  var btn=document.getElementById("btnSaveApp");
+  btn.disabled=true;btn.textContent="Saving...";
+  var action=existingId?"updateApp":"addApp";
+  apiPost({action:action,app:appObj,key:WRITE_KEY},function(err,data){
+    btn.disabled=false;btn.textContent="Save Application";
+    if(data&&data.id) appObj.id=String(data.id);
+    if(existingId){var idx=apps.findIndex(function(a){return a.id===existingId;});if(idx>=0)apps[idx]=appObj;}
+    else{apps.push(appObj);}
+    closeModal();renderTable();updateStats();
     showToast(existingId?"Application updated!":"Application added!");
   });
 }
 
-// ============================================================
-// DELETE
-// ============================================================
-function askDelete(id,name){ deleteTargetId=id; document.getElementById("confirmMsg").textContent='"'+name+'" will be permanently removed.'; document.getElementById("confirmOverlay").classList.add("open"); }
-function closeConfirm(){ document.getElementById("confirmOverlay").classList.remove("open"); deleteTargetId=null; }
+// ── DELETE ──────────────────────────────────────────────────
+function askDelete(id,name){deleteTargetId=id;document.getElementById("confirmMsg").textContent='"'+name+'" will be permanently removed.';document.getElementById("confirmOverlay").classList.add("open");}
+function closeConfirm(){document.getElementById("confirmOverlay").classList.remove("open");deleteTargetId=null;}
 function confirmDelete(){
   if(!deleteTargetId) return;
   var id=deleteTargetId;
-  apiPost({action:"deleteApp",id:id,key:WRITE_KEY}, function(err,data){
-    if(err||!data||data.error) console.warn("API delete failed:", err||data);
-  });
+  apiPost({action:"deleteApp",id:id,key:WRITE_KEY},function(){});
   apps=apps.filter(function(a){return a.id!==id;});
-  closeConfirm(); renderTable(); updateStats(); showToast("Application deleted");
+  closeConfirm();renderTable();updateStats();showToast("Application deleted");
 }
 
-// ============================================================
-// ADMIN USERS
-// ============================================================
+// ── ADMIN USERS ─────────────────────────────────────────────
 function getAdminList(){
-  try{ var r=localStorage.getItem("agri_admin_users"); if(r) return JSON.parse(r); }catch(e){}
+  try{var r=localStorage.getItem("agri_admin_users");if(r)return JSON.parse(r);}catch(e){}
   return [{email:DEFAULT_EMAIL,password:DEFAULT_PASS,name:"Super Admin",role:"superadmin"}];
 }
-function saveAdminListLocal(list){ localStorage.setItem("agri_admin_users",JSON.stringify(list)); }
+function saveAdminListLocal(list){localStorage.setItem("agri_admin_users",JSON.stringify(list));}
 
 function renderAdminTable(){
-  var admins=getAdminList();
-  var rows="";
-  for(var i=0;i<admins.length;i++){
-    var a=admins[i];
-    rows+="<tr>";
-    rows+="<td><strong>"+h(a.name||"Admin")+"</strong></td>";
-    rows+="<td>"+h(a.email)+"</td>";
-    rows+='<td><span class="cat-pill">'+h(a.role||"admin")+"</span></td>";
-    if(i===0){ rows+='<td><span style="color:var(--muted);font-size:12px">Primary admin</span></td>'; }
-    else      { rows+='<td><button class="act-btn act-del btn-del-admin" data-idx="'+i+'" data-email="'+h(a.email)+'">Remove</button></td>'; }
-    rows+="</tr>";
-  }
-  document.getElementById("adminTableBody").innerHTML=rows||'<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--muted)">No admins yet</td></tr>';
+  var tbody=document.getElementById("adminTableBody");
+  tbody.innerHTML='<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--muted)">Loading admins...</td></tr>';
+  apiGet("getAdmins",function(err,data){
+    var admins;
+    if(!err&&data&&data.admins&&data.admins.length>0){ admins=data.admins; }
+    else{ admins=getAdminList(); }
+    adminList=admins;
+    document.getElementById("sAdmins").textContent=admins.length;
+    var rows="";
+    for(var i=0;i<admins.length;i++){
+      var a=admins[i];
+      var isSuperAdmin=(a.role==="superadmin"||i===0);
+      rows+="<tr>";
+      rows+="<td><strong>"+h(a.name||"Admin")+"</strong></td>";
+      rows+="<td>"+h(a.email)+"</td>";
+      rows+='<td><span class="cat-pill">'+h(a.role||"admin")+"</span></td>";
+      if(isSuperAdmin){rows+='<td><span style="color:var(--muted);font-size:12px">Primary admin</span></td>';}
+      else{rows+='<td><button class="act-btn act-del btn-del-admin" data-idx="'+i+'" data-email="'+h(a.email)+'">Remove</button></td>';}
+      rows+="</tr>";
+    }
+    tbody.innerHTML=rows||'<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--muted)">No admins found</td></tr>';
+  });
 }
 
-function openAdminModal(){ document.getElementById("adminModal").classList.add("open"); }
+function openAdminModal(){document.getElementById("adminModal").classList.add("open");}
 function closeAdminModal(){
   document.getElementById("adminModal").classList.remove("open");
-  document.getElementById("aName").value=""; document.getElementById("aEmail").value=""; document.getElementById("aPass").value="";
+  document.getElementById("aName").value="";document.getElementById("aEmail").value="";document.getElementById("aPass").value="";
 }
-
 function saveAdmin(){
-  var name =document.getElementById("aName").value.trim();
+  var name=document.getElementById("aName").value.trim();
   var email=document.getElementById("aEmail").value.trim();
-  var pass =document.getElementById("aPass").value.trim();
+  var pass=document.getElementById("aPass").value.trim();
   if(!email){showToast("Email is required",true);return;}
-  if(!pass) {showToast("Password is required",true);return;}
+  if(!pass){showToast("Password is required",true);return;}
   var btn=document.getElementById("btnSaveAdmin");
-  btn.disabled=true; btn.textContent="Saving...";
-  var adminObj={name:name||email, email:email, password:pass, role:"admin"};
-  // POST to GAS API — creates/updates admin in the Admins sheet
-  apiPost({action:"addAdmin", admin:adminObj, key:WRITE_KEY}, function(err,data){
-    btn.disabled=false; btn.textContent="Add Admin";
-    if(err||!data||data.error){ console.warn("API addAdmin failed:", err||data); showToast("Saved locally only — check GAS deployment",true); }
-    else { showToast(data.updated?"Admin password updated!":"Admin added!"); }
-    // Also save locally
+  btn.disabled=true;btn.textContent="Saving...";
+  var adminObj={name:name||email,email:email,password:pass,role:"admin"};
+  apiPost({action:"addAdmin",admin:adminObj,key:WRITE_KEY},function(err,data){
+    btn.disabled=false;btn.textContent="Add Admin";
+    if(err||!data||data.error){showToast("API error — check GAS deployment",true);}
+    else{showToast(data.updated?"Admin updated!":"Admin added!");}
     var admins=getAdminList();
-    var idx=-1; for(var i=0;i<admins.length;i++){if(admins[i].email===email){idx=i;break;}}
-    if(idx>=0){admins[idx].password=pass; if(name)admins[idx].name=name;} else {admins.push(adminObj);}
+    var idx=-1;for(var i=0;i<admins.length;i++){if(admins[i].email===email){idx=i;break;}}
+    if(idx>=0){admins[idx].password=pass;if(name)admins[idx].name=name;}else{admins.push(adminObj);}
     saveAdminListLocal(admins);
-    closeAdminModal(); renderAdminTable(); updateStats();
+    closeAdminModal();renderAdminTable();
   });
 }
 
-// ============================================================
-// EVENT LISTENERS
-// ============================================================
-document.addEventListener("DOMContentLoaded", function(){
-  document.getElementById("navApps").addEventListener("click",   function(){ showSection("apps"); });
-  document.getElementById("navAdmins").addEventListener("click", function(){ showSection("admins"); });
-  document.getElementById("navPortal").addEventListener("click", function(){ window.open("index.html","_blank"); });
-  document.getElementById("btnLogout").addEventListener("click", function(){ localStorage.removeItem("agri_admin_session"); window.location.href="login.html"; });
-  document.getElementById("btnAddApp").addEventListener("click",   function(){ openModal(null); });
-  document.getElementById("btnAddAdmin").addEventListener("click", function(){ openAdminModal(); });
-  document.getElementById("btnCloseAppModal").addEventListener("click", closeModal);
-  document.getElementById("btnCancelApp").addEventListener("click",     closeModal);
-  document.getElementById("btnSaveApp").addEventListener("click",       saveApp);
-  document.getElementById("fIcon").addEventListener("input", updateIconPreview);
-  document.getElementById("appModal").addEventListener("click", function(e){ if(e.target===this) closeModal(); });
-  document.getElementById("btnCloseAdminModal").addEventListener("click", closeAdminModal);
-  document.getElementById("btnCancelAdmin").addEventListener("click",     closeAdminModal);
-  document.getElementById("btnSaveAdmin").addEventListener("click",       saveAdmin);
-  document.getElementById("adminModal").addEventListener("click", function(e){ if(e.target===this) closeAdminModal(); });
-  document.getElementById("btnCancelDelete").addEventListener("click",  closeConfirm);
-  document.getElementById("btnConfirmDelete").addEventListener("click", confirmDelete);
-  document.getElementById("tableSearch").addEventListener("input", renderTable);
-  document.getElementById("appTableBody").addEventListener("click", function(e){
-    var row=e.target.closest("tr[data-id]"); if(!row) return;
+// ── EVENT LISTENERS ─────────────────────────────────────────
+document.addEventListener("DOMContentLoaded",function(){
+  document.getElementById("navApps").addEventListener("click",    function(){showSection("apps");});
+  document.getElementById("navAdmins").addEventListener("click",  function(){showSection("admins");renderAdminTable();});
+  document.getElementById("navPortal").addEventListener("click",  function(){window.open("../index.html","_blank");});
+  document.getElementById("btnLogout").addEventListener("click",  function(){localStorage.removeItem("agri_admin_session");window.location.href="login.html";});
+  document.getElementById("btnAddApp").addEventListener("click",  function(){openModal(null);});
+  document.getElementById("btnAddAdmin").addEventListener("click",function(){openAdminModal();});
+  document.getElementById("btnCloseAppModal").addEventListener("click",  closeModal);
+  document.getElementById("btnCancelApp").addEventListener("click",      closeModal);
+  document.getElementById("btnSaveApp").addEventListener("click",        saveApp);
+  document.getElementById("fIcon").addEventListener("input",             updateIconPreview);
+  document.getElementById("appModal").addEventListener("click",          function(e){if(e.target===this)closeModal();});
+  document.getElementById("btnCloseAdminModal").addEventListener("click",closeAdminModal);
+  document.getElementById("btnCancelAdmin").addEventListener("click",    closeAdminModal);
+  document.getElementById("btnSaveAdmin").addEventListener("click",      saveAdmin);
+  document.getElementById("adminModal").addEventListener("click",        function(e){if(e.target===this)closeAdminModal();});
+  document.getElementById("btnCancelDelete").addEventListener("click",   closeConfirm);
+  document.getElementById("btnConfirmDelete").addEventListener("click",  confirmDelete);
+  document.getElementById("tableSearch").addEventListener("input",       renderTable);
+  document.getElementById("appTableBody").addEventListener("click",function(e){
+    var row=e.target.closest("tr[data-id]");if(!row)return;
     var id=row.getAttribute("data-id");
     if(e.target.classList.contains("btn-edit-app")){
-      var app=null; for(var i=0;i<apps.length;i++){if(apps[i].id===id){app=apps[i];break;}} if(app) openModal(app);
+      var app=null;for(var i=0;i<apps.length;i++){if(apps[i].id===id){app=apps[i];break;}}if(app)openModal(app);
     }
     if(e.target.classList.contains("btn-del-app")){
-      var nm=""; for(var i=0;i<apps.length;i++){if(apps[i].id===id){nm=apps[i].name||apps[i].app_name||"";break;}} askDelete(id,nm);
+      var nm="";for(var i=0;i<apps.length;i++){if(apps[i].id===id){nm=apps[i].name||apps[i].app_name||"";break;}}askDelete(id,nm);
     }
   });
-  document.getElementById("adminTableBody").addEventListener("click", function(e){
+  document.getElementById("adminTableBody").addEventListener("click",function(e){
     if(e.target.classList.contains("btn-del-admin")){
       var idx=parseInt(e.target.getAttribute("data-idx"),10);
       var email=e.target.getAttribute("data-email");
-      apiPost({action:"deleteAdmin",email:email,key:WRITE_KEY}, function(err,data){
-        if(err||!data||data.error) console.warn("API deleteAdmin failed:", err||data);
-      });
-      var admins=getAdminList(); admins.splice(idx,1); saveAdminListLocal(admins); renderAdminTable(); updateStats(); showToast("Admin removed");
+      apiPost({action:"deleteAdmin",email:email,key:WRITE_KEY},function(){});
+      var admins=getAdminList();admins.splice(idx,1);saveAdminListLocal(admins);
+      renderAdminTable();showToast("Admin removed");
     }
   });
   init();
