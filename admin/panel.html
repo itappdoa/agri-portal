@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel — AgriTech Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --forest:#1a3a2a; --leaf:#2d6a4f; --sage:#52b788; --mint:#95d5b2;
+      --gold:#d4a017; --amber:#e8b84b; --cream:#f8f4e8; --sand:#ede8d8;
+      --ink:#0f1f15; --muted:#5a6e5e; --line:rgba(45,106,79,0.15);
+      --radius:14px; --font-body:'Sora',system-ui,sans-serif;
+      --font-display:'DM Serif Display',Georgia,serif;
+    }
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:var(--font-body); background:#f0ede4; color:var(--ink); min-height:100vh; }
+
+    /* Sidebar */
+    .layout { display:flex; min-height:100vh; }
+    .sidebar {
+      width: 240px; flex-shrink:0;
+      background: var(--forest);
+      display: flex; flex-direction: column;
+      position: fixed; top:0; left:0; bottom:0;
+      z-index: 50;
+    }
+    .sidebar-brand {
+      padding: 24px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      display: flex; align-items:center; gap:10px;
+    }
+    .brand-icon { font-size: 22px; }
+    .brand-label { font-size:13px; font-weight:600; color:var(--cream); line-height:1.3; }
+    .brand-sub { font-size:10px; color:rgba(149,213,178,0.6); display:block; }
+    .sidebar-nav { flex:1; padding:16px 10px; display:flex; flex-direction:column; gap:4px; }
+    .nav-item {
+      display:flex; align-items:center; gap:10px;
+      padding:10px 12px;
+      border-radius:10px;
+      color:rgba(149,213,178,0.7);
+      font-size:13px; font-weight:500;
+      cursor:pointer;
+      transition:all 0.2s;
+      border:none; background:none; width:100%; text-align:left;
+    }
+    .nav-item:hover { background:rgba(255,255,255,0.06); color:var(--mint); }
+    .nav-item.active { background:rgba(82,183,136,0.18); color:var(--mint); }
+    .nav-item .ni { font-size:16px; }
+    .sidebar-foot {
+      padding:16px 10px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .admin-info {
+      display:flex; align-items:center; gap:10px;
+      padding:10px 12px;
+      background:rgba(255,255,255,0.05);
+      border-radius:10px;
+      margin-bottom:8px;
+    }
+    .admin-avatar {
+      width:32px; height:32px;
+      background:linear-gradient(135deg,var(--sage),var(--gold));
+      border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-size:12px; font-weight:700; color:#fff; flex-shrink:0;
+    }
+    .admin-name { font-size:12px; color:var(--cream); font-weight:500; }
+    .admin-role { font-size:10px; color:rgba(149,213,178,0.5); }
+    .logout-btn {
+      width:100%; padding:9px;
+      background:rgba(255,255,255,0.06);
+      border:1px solid rgba(255,255,255,0.1);
+      border-radius:9px;
+      color:rgba(149,213,178,0.7);
+      font-family:var(--font-body);
+      font-size:12px; cursor:pointer;
+      transition:all 0.2s;
+    }
+    .logout-btn:hover { background:rgba(220,38,38,0.15); color:#fca5a5; border-color:rgba(220,38,38,0.3); }
+
+    /* Main content */
+    .main { margin-left:240px; flex:1; padding:32px; }
+    .page-header {
+      display:flex; align-items:center; justify-content:space-between;
+      margin-bottom:32px; gap:16px;
+    }
+    .page-title { font-family:var(--font-display); font-size:28px; color:var(--forest); }
+    .page-subtitle { font-size:13px; color:var(--muted); margin-top:2px; }
+    .add-btn {
+      display:inline-flex; align-items:center; gap:8px;
+      background:var(--forest); color:var(--cream);
+      font-family:var(--font-body); font-size:13px; font-weight:600;
+      padding:11px 20px; border:none; border-radius:11px;
+      cursor:pointer; transition:all 0.2s; white-space:nowrap;
+      letter-spacing:0.03em;
+    }
+    .add-btn:hover { background:var(--leaf); transform:translateY(-1px); }
+
+    /* Stats bar */
+    .stats-bar {
+      display:grid; grid-template-columns:repeat(4,1fr); gap:16px;
+      margin-bottom:32px;
+    }
+    .stat-card {
+      background:#fff; border:1.5px solid var(--line); border-radius:14px;
+      padding:20px; display:flex; align-items:center; gap:14px;
+    }
+    .stat-icon {
+      width:44px; height:44px; border-radius:12px;
+      display:flex; align-items:center; justify-content:center; font-size:20px;
+      flex-shrink:0;
+    }
+    .stat-val { font-size:24px; font-family:var(--font-display); color:var(--forest); }
+    .stat-lbl { font-size:11px; color:var(--muted); }
+
+    /* Table */
+    .table-card {
+      background:#fff; border:1.5px solid var(--line); border-radius:var(--radius);
+      overflow:hidden; box-shadow:0 2px 16px rgba(26,58,42,0.06);
+    }
+    .table-toolbar {
+      display:flex; align-items:center; gap:12px;
+      padding:16px 20px;
+      border-bottom:1.5px solid var(--line);
+    }
+    .table-search {
+      flex:1; padding:9px 14px;
+      font-family:var(--font-body); font-size:13px;
+      color:var(--forest);
+      background:var(--cream); border:1.5px solid var(--line);
+      border-radius:9px; outline:none;
+      transition:all 0.2s;
+    }
+    .table-search:focus { border-color:var(--sage); box-shadow:0 0 0 3px rgba(82,183,136,0.15); }
+    .table-wrap { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; }
+    th {
+      text-align:left; font-size:11px; font-weight:600;
+      letter-spacing:0.06em; text-transform:uppercase; color:var(--muted);
+      padding:12px 20px; background:var(--cream);
+      border-bottom:1.5px solid var(--line);
+    }
+    td { padding:14px 20px; border-bottom:1px solid var(--line); vertical-align:middle; }
+    tr:last-child td { border-bottom:none; }
+    tr:hover td { background:rgba(82,183,136,0.03); }
+    .td-icon {
+      width:38px; height:38px; border-radius:10px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:18px; border:1.5px solid var(--line); overflow:hidden;
+    }
+    .td-icon img { width:100%; height:100%; object-fit:cover; }
+    .td-icon.icon-auto {
+      font-size:13px; font-weight:700; color:#fff;
+    }
+    .td-name { font-weight:600; font-size:13px; color:var(--forest); }
+    .td-desc { font-size:12px; color:var(--muted); max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .td-url { font-size:12px; color:var(--sage); max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .cat-pill {
+      font-size:10px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase;
+      padding:3px 10px; border-radius:50px;
+      background:rgba(82,183,136,0.12); color:var(--leaf);
+      border:1px solid rgba(82,183,136,0.25); white-space:nowrap;
+    }
+    .action-btns { display:flex; gap:6px; }
+    .act-btn {
+      padding:6px 12px; border-radius:7px; cursor:pointer;
+      font-family:var(--font-body); font-size:11.5px; font-weight:600;
+      border:1.5px solid; transition:all 0.2s; white-space:nowrap;
+    }
+    .act-edit { background:rgba(82,183,136,0.08); color:var(--leaf); border-color:rgba(82,183,136,0.3); }
+    .act-edit:hover { background:rgba(82,183,136,0.18); }
+    .act-del { background:rgba(220,38,38,0.06); color:#dc2626; border-color:rgba(220,38,38,0.2); }
+    .act-del:hover { background:rgba(220,38,38,0.14); }
+    .empty-row td { text-align:center; padding:48px; color:var(--muted); font-size:14px; }
+
+    /* Modal */
+    .modal-overlay {
+      display:none; position:fixed; inset:0; z-index:200;
+      background:rgba(15,31,21,0.55); backdrop-filter:blur(6px);
+      align-items:center; justify-content:center; padding:24px;
+    }
+    .modal-overlay.open { display:flex; }
+    .modal {
+      background:#fff; border-radius:20px;
+      padding:32px; width:100%; max-width:540px;
+      box-shadow:0 24px 80px rgba(26,58,42,0.22);
+      animation:slideUp 0.3s ease;
+      max-height:90vh; overflow-y:auto;
+    }
+    @keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+    .modal-head {
+      display:flex; align-items:center; justify-content:space-between;
+      margin-bottom:24px;
+    }
+    .modal-title { font-family:var(--font-display); font-size:22px; color:var(--forest); }
+    .modal-close {
+      width:32px; height:32px; border-radius:8px;
+      background:var(--cream); border:1.5px solid var(--line);
+      cursor:pointer; font-size:18px; color:var(--muted);
+      display:flex; align-items:center; justify-content:center;
+      transition:all 0.2s;
+    }
+    .modal-close:hover { background:var(--sand); }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .form-group { margin-bottom:18px; }
+    .form-label {
+      display:block; font-size:11px; font-weight:600;
+      color:var(--forest); letter-spacing:0.05em; text-transform:uppercase;
+      margin-bottom:7px;
+    }
+    .form-input, .form-textarea, .form-select {
+      width:100%; padding:11px 14px;
+      font-family:var(--font-body); font-size:13.5px; color:var(--forest);
+      background:var(--cream); border:1.5px solid var(--line);
+      border-radius:10px; outline:none; transition:all 0.2s;
+    }
+    .form-textarea { min-height:90px; resize:vertical; }
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      border-color:var(--sage); box-shadow:0 0 0 3px rgba(82,183,136,0.15);
+    }
+    .form-help { font-size:11px; color:var(--muted); margin-top:5px; }
+    .icon-preview-box {
+      display:flex; align-items:center; gap:14px;
+      padding:14px; background:var(--cream); border-radius:10px; margin-bottom:18px;
+    }
+    .icon-preview {
+      width:52px; height:52px; border-radius:12px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:24px; border:1.5px solid var(--line); flex-shrink:0; overflow:hidden;
+    }
+    .icon-preview img { width:100%; height:100%; object-fit:cover; border-radius:10px; }
+    .icon-preview-text { font-size:12px; color:var(--muted); }
+    .modal-actions {
+      display:flex; gap:10px; justify-content:flex-end; margin-top:24px;
+      padding-top:20px; border-top:1.5px solid var(--line);
+    }
+    .btn-cancel {
+      padding:10px 20px; background:var(--cream); border:1.5px solid var(--line);
+      border-radius:10px; font-family:var(--font-body); font-size:13px;
+      color:var(--muted); cursor:pointer; transition:all 0.2s;
+    }
+    .btn-cancel:hover { background:var(--sand); }
+    .btn-save {
+      padding:10px 24px; background:var(--forest); color:var(--cream);
+      border:none; border-radius:10px; font-family:var(--font-body);
+      font-size:13px; font-weight:600; cursor:pointer; transition:all 0.2s;
+    }
+    .btn-save:hover { background:var(--leaf); }
+
+    /* Toast */
+    .toast {
+      position:fixed; bottom:24px; right:24px; z-index:999;
+      background:var(--forest); color:var(--cream);
+      padding:14px 20px; border-radius:12px;
+      font-size:13px; font-weight:500;
+      box-shadow:0 8px 32px rgba(26,58,42,0.25);
+      transform:translateY(80px); opacity:0;
+      transition:all 0.3s ease;
+      display:flex; align-items:center; gap:10px;
+    }
+    .toast.show { transform:translateY(0); opacity:1; }
+
+    /* Confirm dialog */
+    .confirm-overlay {
+      display:none; position:fixed; inset:0; z-index:300;
+      background:rgba(15,31,21,0.6); backdrop-filter:blur(4px);
+      align-items:center; justify-content:center;
+    }
+    .confirm-overlay.open { display:flex; }
+    .confirm-box {
+      background:#fff; border-radius:16px; padding:28px 28px 24px;
+      width:340px; box-shadow:0 16px 60px rgba(26,58,42,0.2);
+      text-align:center; animation:slideUp 0.25s ease;
+    }
+    .confirm-icon { font-size:36px; margin-bottom:12px; }
+    .confirm-title { font-family:var(--font-display); font-size:20px; color:var(--forest); margin-bottom:8px; }
+    .confirm-msg { font-size:13px; color:var(--muted); margin-bottom:24px; line-height:1.5; }
+    .confirm-btns { display:flex; gap:10px; }
+    .confirm-cancel { flex:1; padding:10px; background:var(--cream); border:1.5px solid var(--line); border-radius:10px; font-family:var(--font-body); font-size:13px; color:var(--muted); cursor:pointer; transition:all 0.2s; }
+    .confirm-cancel:hover { background:var(--sand); }
+    .confirm-del { flex:1; padding:10px; background:#dc2626; color:#fff; border:none; border-radius:10px; font-family:var(--font-body); font-size:13px; font-weight:600; cursor:pointer; transition:all 0.2s; }
+    .confirm-del:hover { background:#b91c1c; }
+
+    @media(max-width:768px) {
+      .sidebar { width:60px; }
+      .brand-label,.admin-name,.admin-role,.nav-item span,.logout-btn { display:none; }
+      .main { margin-left:60px; padding:20px 16px; }
+      .stats-bar { grid-template-columns:repeat(2,1fr); }
+      .form-row { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">🌿</div>
+      <div class="brand-label">Admin Panel<span class="brand-sub">AgriTech Portal</span></div>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="nav-item active" onclick="showSection('apps')">
+        <span class="ni">⊞</span><span>App Cards</span>
+      </button>
+      <button class="nav-item" onclick="showSection('admins')">
+        <span class="ni">👤</span><span>Manage Admins</span>
+      </button>
+      <button class="nav-item" onclick="window.open('../index.html','_blank')">
+        <span class="ni">↗</span><span>View Portal</span>
+      </button>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="admin-info">
+        <div class="admin-avatar" id="adminAvatar">A</div>
+        <div><div class="admin-name" id="adminName">Admin</div><div class="admin-role">Super Admin</div></div>
+      </div>
+      <button class="logout-btn" onclick="doLogout()">🚪 Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- APPS SECTION -->
+    <div id="section-apps">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Application Cards</div>
+          <div class="page-subtitle">Manage all portal application entries</div>
+        </div>
+        <button class="add-btn" onclick="openModal()">＋ Add New App</button>
+      </div>
+
+      <div class="stats-bar" id="statsBar">
+        <div class="stat-card">
+          <div class="stat-icon" style="background:rgba(45,106,79,0.1)">📦</div>
+          <div><div class="stat-val" id="sTotal">0</div><div class="stat-lbl">Total Apps</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:rgba(212,160,23,0.1)">🆕</div>
+          <div><div class="stat-val" id="sRecent">0</div><div class="stat-lbl">Added This Month</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:rgba(82,183,136,0.1)">🏷️</div>
+          <div><div class="stat-val" id="sCats">0</div><div class="stat-lbl">Categories</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:rgba(99,102,241,0.1)">👥</div>
+          <div><div class="stat-val" id="sAdmins">0</div><div class="stat-lbl">Admin Users</div></div>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-toolbar">
+          <input type="text" class="table-search" id="tableSearch" placeholder="🔍  Search apps…" oninput="renderTable()"/>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Icon</th><th>App Name</th><th>Description</th><th>URL</th>
+                <th>Category</th><th>Date Added</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="appTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMINS SECTION -->
+    <div id="section-admins" style="display:none;">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Manage Admin Users</div>
+          <div class="page-subtitle">Add or remove admin access</div>
+        </div>
+        <button class="add-btn" onclick="openAdminModal()">＋ Add Admin</button>
+      </div>
+      <div class="table-card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Actions</th></tr></thead>
+            <tbody id="adminTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- APP MODAL -->
+<div class="modal-overlay" id="appModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="modalTitle">Add New Application</div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+
+    <div class="icon-preview-box">
+      <div class="icon-preview" id="iconPreview">🌿</div>
+      <div class="icon-preview-text">
+        <strong>Icon Preview</strong><br/>
+        Enter an emoji or paste an image URL below
+      </div>
+    </div>
+
+    <input type="hidden" id="editId"/>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">App Name *</label>
+        <input type="text" class="form-input" id="fName" placeholder="e.g. Crop Disease Tracker"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <select class="form-select" id="fCat">
+          <option value="">— Select —</option>
+          <option value="field">Field Tools</option>
+          <option value="finance">Finance</option>
+          <option value="monitoring">Monitoring</option>
+          <option value="hr">HR & Admin</option>
+          <option value="reports">Reports</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Short Description *</label>
+      <textarea class="form-textarea" id="fDesc" placeholder="Describe what this app does…"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">App URL *</label>
+      <input type="url" class="form-input" id="fUrl" placeholder="https://"/>
+      <div class="form-help">Full URL where this app is hosted</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Icon / Image</label>
+      <input type="text" class="form-input" id="fIcon" placeholder="Emoji (🌾) or image URL (https://…)" oninput="updateIconPreview()"/>
+      <div class="form-help">Leave empty — a smart initial icon will be auto-generated</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Date Added</label>
+      <input type="date" class="form-input" id="fDate"/>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveApp()">Save Application</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN USER MODAL -->
+<div class="modal-overlay" id="adminModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">Add Admin User</div>
+      <button class="modal-close" onclick="closeAdminModal()">×</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Full Name</label>
+      <input type="text" class="form-input" id="aName" placeholder="e.g. Priya Nair"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input type="email" class="form-input" id="aEmail" placeholder="priya@agri.kerala.gov.in"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input type="password" class="form-input" id="aPass" placeholder="Set a strong password"/>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeAdminModal()">Cancel</button>
+      <button class="btn-save" onclick="saveAdmin()">Add Admin</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <div class="confirm-icon">🗑️</div>
+    <div class="confirm-title">Delete App?</div>
+    <div class="confirm-msg" id="confirmMsg">This action cannot be undone.</div>
+    <div class="confirm-btns">
+      <button class="confirm-cancel" onclick="closeConfirm()">Cancel</button>
+      <button class="confirm-del" onclick="confirmDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">✅ <span id="toastMsg"></span></div>
+
+<script src="../js/data.js"></script>
+<script>
+// ---- Auth guard ----
+(function() {
+  const sess = localStorage.getItem("agri_admin_session");
+  if (!sess) { window.location.href = "login.html"; return; }
+  try {
+    const s = JSON.parse(sess);
+    // 8-hour session
+    if (Date.now() - s.ts > 8 * 60 * 60 * 1000) {
+      localStorage.removeItem("agri_admin_session");
+      window.location.href = "login.html";
+    }
+    const email = s.email || "";
+    document.getElementById("adminAvatar").textContent = email[0].toUpperCase();
+    document.getElementById("adminName").textContent = email.split("@")[0];
+  } catch(e) { window.location.href = "login.html"; }
+})();
+
+function doLogout() {
+  localStorage.removeItem("agri_admin_session");
+  window.location.href = "login.html";
+}
+
+// ---- State ----
+let apps = [];
+let deleteTargetId = null;
+let editingAdminIdx = null;
+
+// ---- Init ----
+(async function() {
+  apps = await loadApps();
+  renderTable();
+  renderAdminTable();
+  updateStats();
+  setDefaultDate();
+})();
+
+function setDefaultDate() {
+  document.getElementById("fDate").value = new Date().toISOString().split("T")[0];
+}
+
+// ---- Section nav ----
+function showSection(name) {
+  ["apps","admins"].forEach(s => {
+    document.getElementById(`section-${s}`).style.display = s===name ? "" : "none";
+  });
+  document.querySelectorAll(".nav-item").forEach((el,i) => {
+    el.classList.toggle("active", i === (name==="apps"?0:1));
+  });
+}
+
+// ---- Stats ----
+function updateStats() {
+  document.getElementById("sTotal").textContent = apps.length;
+  const thisMonth = new Date().toISOString().slice(0,7);
+  document.getElementById("sRecent").textContent = apps.filter(a => (a.date||a.created_date||"").startsWith(thisMonth)).length;
+  const cats = new Set(apps.map(a => a.category).filter(Boolean));
+  document.getElementById("sCats").textContent = cats.size;
+  document.getElementById("sAdmins").textContent = getAdminList().length;
+}
+
+// ---- Table ----
+function renderTable() {
+  const q = (document.getElementById("tableSearch").value || "").toLowerCase();
+  const filtered = apps.filter(a => {
+    const name = (a.name||a.app_name||"").toLowerCase();
+    const desc = (a.desc||a.description||"").toLowerCase();
+    return !q || name.includes(q) || desc.includes(q);
+  });
+
+  const tbody = document.getElementById("appTableBody");
+  if (!filtered.length) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:48px;color:var(--muted)">No applications found</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(app => {
+    const name = app.name || app.app_name || "Untitled";
+    const desc = app.desc || app.description || "—";
+    const url  = app.url || "#";
+    const icon = app.icon || app.image || "";
+    const cat  = app.category || "";
+    const date = app.date || app.created_date || "";
+    const catLabel = CAT_LABELS[cat] || (cat ? cat : "—");
+    const iconHtml = buildAdminIcon(icon, name);
+    return `
+    <tr>
+      <td>${iconHtml}</td>
+      <td><div class="td-name">${esc(name)}</div></td>
+      <td><div class="td-desc" title="${esc(desc)}">${esc(desc)}</div></td>
+      <td><div class="td-url" title="${esc(url)}">${esc(url)}</div></td>
+      <td>${catLabel !== "—" ? `<span class="cat-pill">${esc(catLabel)}</span>` : "—"}</td>
+      <td>${date ? formatDate(date) : "—"}</td>
+      <td>
+        <div class="action-btns">
+          <button class="act-btn act-edit" onclick="editApp('${esc(app.id)}')">✏️ Edit</button>
+          <button class="act-btn act-del" onclick="askDelete('${esc(app.id)}','${esc(name)}')">🗑️ Delete</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join("");
+}
+
+function buildAdminIcon(icon, name) {
+  if (icon && icon.startsWith("http")) {
+    return `<div class="td-icon"><img src="${esc(icon)}" alt="${esc(name)}" onerror="this.parentNode.outerHTML='<div class=\\'td-icon icon-auto\\' style=\\'background:linear-gradient(135deg,${getIconColor(name).join(",")});\\'>${getInitials(name)}</div>'"/></div>`;
+  }
+  if (icon && [...icon].length <= 2 && icon.match(/\p{Emoji}/u)) {
+    return `<div class="td-icon" style="font-size:20px;background:var(--sand);">${icon}</div>`;
+  }
+  const [bg, fg] = getIconColor(name);
+  return `<div class="td-icon icon-auto" style="background:linear-gradient(135deg,${bg},${fg})">${getInitials(name)}</div>`;
+}
+
+// ---- Modal: Add/Edit ----
+function openModal(app) {
+  document.getElementById("appModal").classList.add("open");
+  document.getElementById("modalTitle").textContent = app ? "Edit Application" : "Add New Application";
+  document.getElementById("editId").value = app ? app.id : "";
+  document.getElementById("fName").value = app ? (app.name || app.app_name || "") : "";
+  document.getElementById("fDesc").value = app ? (app.desc || app.description || "") : "";
+  document.getElementById("fUrl").value  = app ? (app.url || "") : "";
+  document.getElementById("fIcon").value = app ? (app.icon || app.image || "") : "";
+  document.getElementById("fCat").value  = app ? (app.category || "") : "";
+  document.getElementById("fDate").value = app ? (app.date || app.created_date || new Date().toISOString().split("T")[0]) : new Date().toISOString().split("T")[0];
+  updateIconPreview();
+}
+
+function closeModal() {
+  document.getElementById("appModal").classList.remove("open");
+}
+
+function editApp(id) {
+  const app = apps.find(a => a.id === id);
+  if (app) openModal(app);
+}
+
+function updateIconPreview() {
+  const icon = document.getElementById("fIcon").value.trim();
+  const name = document.getElementById("fName").value.trim() || "App";
+  const box = document.getElementById("iconPreview");
+
+  if (icon.startsWith("http")) {
+    box.innerHTML = `<img src="${esc(icon)}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;" onerror="this.parentNode.innerHTML='${getInitials(name)}'"/>`;
+    box.style.cssText = "";
+  } else if (icon && [...icon].length <= 2 && icon.match(/\p{Emoji}/u)) {
+    box.innerHTML = icon;
+    box.style.background = "var(--sand)"; box.style.fontSize = "24px";
+  } else {
+    const initials = getInitials(name);
+    const [bg, fg] = getIconColor(name);
+    box.innerHTML = initials;
+    box.style.background = `linear-gradient(135deg,${bg},${fg})`;
+    box.style.color = "#fff"; box.style.fontSize = "18px"; box.style.fontWeight = "700";
+  }
+}
+
+function saveApp() {
+  const name = document.getElementById("fName").value.trim();
+  const desc = document.getElementById("fDesc").value.trim();
+  const url  = document.getElementById("fUrl").value.trim();
+  if (!name) { showToast("⚠️ App name is required", true); return; }
+  if (!desc) { showToast("⚠️ Description is required", true); return; }
+  if (!url)  { showToast("⚠️ App URL is required", true); return; }
+
+  const id = document.getElementById("editId").value;
+  const newApp = {
+    id: id || Date.now().toString(),
+    name, desc, url,
+    icon:     document.getElementById("fIcon").value.trim(),
+    category: document.getElementById("fCat").value,
+    date:     document.getElementById("fDate").value,
+  };
+
+  if (id) {
+    const idx = apps.findIndex(a => a.id === id);
+    if (idx >= 0) apps[idx] = newApp;
+  } else {
+    apps.push(newApp);
+  }
+
+  saveApps(apps);
+  closeModal();
+  renderTable();
+  updateStats();
+  showToast(id ? "✅ Application updated!" : "✅ Application added!");
+}
+
+// ---- Delete ----
+function askDelete(id, name) {
+  deleteTargetId = id;
+  document.getElementById("confirmMsg").textContent = `"${name}" will be permanently removed.`;
+  document.getElementById("confirmOverlay").classList.add("open");
+}
+function closeConfirm() { document.getElementById("confirmOverlay").classList.remove("open"); deleteTargetId = null; }
+function confirmDelete() {
+  if (!deleteTargetId) return;
+  apps = apps.filter(a => a.id !== deleteTargetId);
+  saveApps(apps);
+  closeConfirm();
+  renderTable();
+  updateStats();
+  showToast("🗑️ Application deleted");
+}
+
+// ---- Admin Users ----
+function getAdminList() {
+  const saved = localStorage.getItem("agri_admin_users");
+  if (saved) try { return JSON.parse(saved); } catch(e) {}
+  return [{ name:"Super Admin", email: CONFIG.ADMIN_EMAIL, password: CONFIG.ADMIN_PASSWORD, role:"superadmin" }];
+}
+function saveAdminList(list) { localStorage.setItem("agri_admin_users", JSON.stringify(list)); }
+
+function renderAdminTable() {
+  const admins = getAdminList();
+  const tbody = document.getElementById("adminTableBody");
+  tbody.innerHTML = admins.map((a,i) => `
+  <tr>
+    <td><strong>${esc(a.name||"Admin")}</strong></td>
+    <td>${esc(a.email||"")}</td>
+    <td><span class="cat-pill">${esc(a.role||"admin")}</span></td>
+    <td>${i===0 ? '<span style="color:var(--muted);font-size:12px;">Cannot delete primary admin</span>' :
+      `<button class="act-btn act-del" onclick="deleteAdmin(${i})">🗑️ Remove</button>`}
+    </td>
+  </tr>`).join("");
+}
+
+function openAdminModal() { document.getElementById("adminModal").classList.add("open"); }
+function closeAdminModal() { document.getElementById("adminModal").classList.remove("open"); }
+function saveAdmin() {
+  const name  = document.getElementById("aName").value.trim();
+  const email = document.getElementById("aEmail").value.trim();
+  const pass  = document.getElementById("aPass").value;
+  if (!email || !pass) { showToast("⚠️ Email and password required", true); return; }
+  const admins = getAdminList();
+  if (admins.find(a => a.email === email)) { showToast("⚠️ Admin already exists", true); return; }
+  admins.push({ name, email, password: pass, role:"admin" });
+  saveAdminList(admins);
+  closeAdminModal();
+  renderAdminTable();
+  updateStats();
+  showToast("✅ Admin user added!");
+  document.getElementById("aName").value = "";
+  document.getElementById("aEmail").value = "";
+  document.getElementById("aPass").value = "";
+}
+function deleteAdmin(idx) {
+  const admins = getAdminList();
+  admins.splice(idx, 1);
+  saveAdminList(admins);
+  renderAdminTable();
+  updateStats();
+  showToast("Admin removed");
+}
+
+// ---- Toast ----
+function showToast(msg, isErr) {
+  const t = document.getElementById("toast");
+  const m = document.getElementById("toastMsg");
+  m.textContent = msg;
+  t.style.background = isErr ? "#dc2626" : "var(--forest)";
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 3000);
+}
+
+// ---- Helpers ----
+function esc(s) { return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;"); }
+function formatDate(d) {
+  try { return new Date(d).toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"}); }
+  catch { return d; }
+}
+
+// Close modal on overlay click
+document.getElementById("appModal").addEventListener("click", function(e) {
+  if (e.target === this) closeModal();
+});
+document.getElementById("adminModal").addEventListener("click", function(e) {
+  if (e.target === this) closeAdminModal();
+});
+</script>
+</body>
+</html>
