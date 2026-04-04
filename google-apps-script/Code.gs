@@ -1,42 +1,33 @@
 /**
  * ============================================================
- *  AGRI PORTAL — GOOGLE APPS SCRIPT BACKEND (Fixed)
+ *  AGRI PORTAL — GOOGLE APPS SCRIPT BACKEND (Fixed v2)
  *  Agriculture Department IT Cell, Government of Kerala
  * ============================================================
  *
- *  CHANGES FROM ORIGINAL:
- *  1. Added WRITE_KEY constant — must match WRITE_KEY in data.js
- *  2. Added setApps() function — bulk replace all apps in sheet
- *  3. Added "setApps" case in doPost switch
- *  4. SHEET_ID placeholder is clearly marked — YOU MUST SET IT
+ *  CHANGES IN THIS VERSION:
+ *  1. Added setAdmins() — bulk sync admin users to Admins sheet
+ *  2. Added "setAdmins" case in doPost switch (WRITE_KEY protected)
+ *  3. setApps() added (from previous fix)
+ *  4. WRITE_KEY added (from previous fix)
  *
- *  SETUP INSTRUCTIONS:
- *  1. Go to script.google.com
- *  2. Open your existing project (or create new "AgriPortal")
- *  3. Replace the entire Code.gs with this file
- *  4. ⚠️  REPLACE SHEET_ID below with your actual Google Sheet ID
- *     (Get it from the sheet URL: .../spreadsheets/d/SHEET_ID/edit)
- *  5. ⚠️  Make sure WRITE_KEY here matches WRITE_KEY in data.js
- *  6. Deploy → Manage Deployments → NEW Deployment (or edit existing)
- *     - Execute as: Me
- *     - Who has access: Anyone
- *  7. Copy the new Web App URL and update API_URL in data.js if changed
- *
- *  GOOGLE SHEET STRUCTURE:
- *  Sheet name: "Apps"    → id | name | desc | url | icon | category | date
- *  Sheet name: "Admins"  → email | password | name | token | last_login
+ *  SETUP STEPS:
+ *  1. Replace SHEET_ID with your actual Google Sheet ID
+ *     (from URL: .../spreadsheets/d/SHEET_ID/edit)
+ *  2. Keep WRITE_KEY identical to WRITE_KEY in data.js
+ *  3. Deploy → Manage Deployments → Edit → New Version → Deploy
+ *     Execute as: Me | Who has access: Anyone
+ *  4. Run setupSheet() once manually to create sheet tabs + default admin
  * ============================================================
  */
 
-// ⚠️ REPLACE THIS with your actual Google Sheet ID
-// Get it from the sheet URL: https://docs.google.com/spreadsheets/d/SHEET_ID/edit
-const SHEET_ID   = "YOUR_GOOGLE_SHEET_ID_HERE";
+// ⚠️ REPLACE with your actual Google Sheet ID
+const SHEET_ID    = "1EHg04iUwlkE4cTzJYRlk4Hiwu2K-rCFjCYMlDyeeb8o";
 
-const SHEET_NAME = "Apps";
+const SHEET_NAME  = "Apps";
 const ADMIN_SHEET = "Admins";
 
-// ⚠️ This WRITE_KEY must exactly match WRITE_KEY in data.js
-const WRITE_KEY  = "agri-portal-write-2025";
+// ⚠️ Must match WRITE_KEY in data.js
+const WRITE_KEY   = "agri-portal-write-2025";
 
 // ============================================================
 //  WEB APP ENTRY POINTS
@@ -44,12 +35,7 @@ const WRITE_KEY  = "agri-portal-write-2025";
 
 function doGet(e) {
   const action = e.parameter.action || "home";
-
-  if (action === "getApps") {
-    return jsonResponse(getApps());
-  }
-
-  // Serve the portal HTML (if using Apps Script as host)
+  if (action === "getApps") return jsonResponse(getApps());
   return HtmlService
     .createHtmlOutputFromFile("index")
     .setTitle("AgriTech Portal — Agriculture Department IT Cell")
@@ -59,11 +45,11 @@ function doGet(e) {
 
 function doPost(e) {
   try {
-    const data = JSON.parse(e.postData.contents);
+    const data   = JSON.parse(e.postData.contents);
     const action = data.action;
 
-    // Auth check for per-user write operations (login-based token)
-    if (["addApp", "updateApp", "deleteApp", "addAdmin", "deleteAdmin"].includes(action)) {
+    // Token-based auth for individual CRUD operations
+    if (["addApp","updateApp","deleteApp","addAdmin","deleteAdmin"].includes(action)) {
       if (!isAuthorized(data.email, data.token)) {
         return jsonResponse({ error: "Unauthorized" }, 401);
       }
@@ -78,13 +64,16 @@ function doPost(e) {
       case "addAdmin":    return jsonResponse(addAdmin(data.admin));
       case "deleteAdmin": return jsonResponse(deleteAdmin(data.email));
 
-      // ✅ NEW: Bulk replace all apps (called by saveApps() in data.js)
-      // Uses WRITE_KEY instead of per-user token auth
+      // ✅ Bulk replace all apps (called by saveApps() in data.js)
       case "setApps": {
-        if (data.key !== WRITE_KEY) {
-          return jsonResponse({ error: "Unauthorized: invalid write key" }, 401);
-        }
+        if (data.key !== WRITE_KEY) return jsonResponse({ error: "Unauthorized" }, 401);
         return jsonResponse(setApps(data.apps));
+      }
+
+      // ✅ NEW: Bulk replace all admins (called by saveAdminList() in panel.html)
+      case "setAdmins": {
+        if (data.key !== WRITE_KEY) return jsonResponse({ error: "Unauthorized" }, 401);
+        return jsonResponse(setAdmins(data.admins));
       }
 
       default: return jsonResponse({ error: "Unknown action" }, 400);
@@ -102,30 +91,21 @@ function getApps() {
   const sheet = getSheet(SHEET_NAME);
   const rows  = sheet.getDataRange().getValues();
   if (rows.length < 2) return { apps: [] };
-
   const headers = rows[0].map(h => String(h).trim().toLowerCase());
   const apps = rows.slice(1).map(row => {
     const obj = {};
     headers.forEach((h, i) => { obj[h] = row[i] || ""; });
     return obj;
   }).filter(a => a.name || a.app_name);
-
   return { apps };
 }
 
-// ✅ NEW: Replace all apps in the sheet at once
-// Called when admin adds/edits/deletes an app via the admin panel
+// Bulk replace all apps
 function setApps(apps) {
   const sheet = getSheet(SHEET_NAME);
   ensureHeaders(sheet);
-
-  // Clear all data rows, keeping the header row
   const lastRow = sheet.getLastRow();
-  if (lastRow > 1) {
-    sheet.deleteRows(2, lastRow - 1);
-  }
-
-  // Write all apps fresh
+  if (lastRow > 1) sheet.deleteRows(2, lastRow - 1);
   if (apps && apps.length > 0) {
     const rows = apps.map(function(app) {
       return [
@@ -140,7 +120,6 @@ function setApps(apps) {
     });
     sheet.getRange(2, 1, rows.length, 7).setValues(rows);
   }
-
   return { success: true, count: apps ? apps.length : 0 };
 }
 
@@ -148,15 +127,7 @@ function addApp(app) {
   const sheet = getSheet(SHEET_NAME);
   ensureHeaders(sheet);
   const id = Date.now().toString();
-  sheet.appendRow([
-    id,
-    app.name     || "",
-    app.desc     || "",
-    app.url      || "",
-    app.icon     || "",
-    app.category || "",
-    app.date     || new Date().toISOString().split("T")[0],
-  ]);
+  sheet.appendRow([id, app.name||"", app.desc||"", app.url||"", app.icon||"", app.category||"", app.date||new Date().toISOString().split("T")[0]]);
   return { success: true, id };
 }
 
@@ -165,9 +136,7 @@ function updateApp(app) {
   const rows  = sheet.getDataRange().getValues();
   for (let i = 1; i < rows.length; i++) {
     if (String(rows[i][0]) === String(app.id)) {
-      sheet.getRange(i + 1, 1, 1, 7).setValues([[
-        app.id, app.name, app.desc, app.url, app.icon, app.category, app.date
-      ]]);
+      sheet.getRange(i+1, 1, 1, 7).setValues([[app.id, app.name, app.desc, app.url, app.icon, app.category, app.date]]);
       return { success: true };
     }
   }
@@ -178,12 +147,55 @@ function deleteApp(id) {
   const sheet = getSheet(SHEET_NAME);
   const rows  = sheet.getDataRange().getValues();
   for (let i = rows.length - 1; i >= 1; i--) {
-    if (String(rows[i][0]) === String(id)) {
-      sheet.deleteRow(i + 1);
-      return { success: true };
-    }
+    if (String(rows[i][0]) === String(id)) { sheet.deleteRow(i+1); return { success: true }; }
   }
   return { error: "App not found" };
+}
+
+// ============================================================
+//  ADMIN USERS CRUD
+// ============================================================
+
+// ✅ NEW: Bulk replace all admins in the Admins sheet
+// Called every time an admin is added or deleted via panel.html
+function setAdmins(admins) {
+  const sheet = getSheet(ADMIN_SHEET);
+  ensureAdminHeaders(sheet);
+
+  // Clear all data rows, keep header
+  const lastRow = sheet.getLastRow();
+  if (lastRow > 1) sheet.deleteRows(2, lastRow - 1);
+
+  if (admins && admins.length > 0) {
+    const rows = admins.map(function(a) {
+      return [
+        a.email      || "",
+        a.password   || "",
+        a.name       || "",
+        a.token      || "",
+        a.last_login || "",
+      ];
+    });
+    sheet.getRange(2, 1, rows.length, 5).setValues(rows);
+  }
+
+  return { success: true, count: admins ? admins.length : 0 };
+}
+
+function addAdmin(admin) {
+  const sheet = getSheet(ADMIN_SHEET);
+  ensureAdminHeaders(sheet);
+  sheet.appendRow([admin.email, admin.password, admin.name||"", "", ""]);
+  return { success: true };
+}
+
+function deleteAdmin(email) {
+  const sheet = getSheet(ADMIN_SHEET);
+  const rows  = sheet.getDataRange().getValues();
+  for (let i = rows.length - 1; i >= 1; i--) {
+    if (String(rows[i][0]).trim() === email) { sheet.deleteRow(i+1); return { success: true }; }
+  }
+  return { error: "Admin not found" };
 }
 
 // ============================================================
@@ -193,14 +205,13 @@ function deleteApp(id) {
 function handleLogin(data) {
   const adminSheet = getSheet(ADMIN_SHEET);
   const rows = adminSheet.getDataRange().getValues();
-
   for (let i = 1; i < rows.length; i++) {
     const email = String(rows[i][0]).trim();
     const pass  = String(rows[i][1]).trim();
     if (email === data.email && pass === data.password) {
       const token = Utilities.base64Encode(email + ":" + Date.now());
-      adminSheet.getRange(i + 1, 3).setValue(token);
-      adminSheet.getRange(i + 1, 4).setValue(new Date());
+      adminSheet.getRange(i+1, 4).setValue(token);
+      adminSheet.getRange(i+1, 5).setValue(new Date());
       return { success: true, token, name: rows[i][2] || email };
     }
   }
@@ -212,30 +223,9 @@ function isAuthorized(email, token) {
   const adminSheet = getSheet(ADMIN_SHEET);
   const rows = adminSheet.getDataRange().getValues();
   for (let i = 1; i < rows.length; i++) {
-    if (String(rows[i][0]).trim() === email && String(rows[i][2]).trim() === token) {
-      return true;
-    }
+    if (String(rows[i][0]).trim() === email && String(rows[i][2]).trim() === token) return true;
   }
   return false;
-}
-
-function addAdmin(admin) {
-  const sheet = getSheet(ADMIN_SHEET);
-  ensureAdminHeaders(sheet);
-  sheet.appendRow([admin.email, admin.password, admin.name || "", "", ""]);
-  return { success: true };
-}
-
-function deleteAdmin(email) {
-  const sheet = getSheet(ADMIN_SHEET);
-  const rows  = sheet.getDataRange().getValues();
-  for (let i = rows.length - 1; i >= 1; i--) {
-    if (String(rows[i][0]).trim() === email) {
-      sheet.deleteRow(i + 1);
-      return { success: true };
-    }
-  }
-  return { error: "Admin not found" };
 }
 
 // ============================================================
@@ -255,8 +245,8 @@ function getSheet(name) {
 
 function ensureHeaders(sheet) {
   if (sheet.getLastRow() === 0) {
-    sheet.appendRow(["id", "name", "desc", "url", "icon", "category", "date"]);
-    sheet.getRange(1, 1, 1, 7).setFontWeight("bold").setBackground("#1a3a2a").setFontColor("#ffffff");
+    sheet.appendRow(["id","name","desc","url","icon","category","date"]);
+    sheet.getRange(1,1,1,7).setFontWeight("bold").setBackground("#1a3a2a").setFontColor("#ffffff");
     sheet.setFrozenRows(1);
     sheet.setColumnWidth(3, 300);
     sheet.setColumnWidth(4, 250);
@@ -265,37 +255,26 @@ function ensureHeaders(sheet) {
 
 function ensureAdminHeaders(sheet) {
   if (sheet.getLastRow() === 0) {
-    sheet.appendRow(["email", "password", "name", "token", "last_login"]);
-    sheet.getRange(1, 1, 1, 5).setFontWeight("bold").setBackground("#1a3a2a").setFontColor("#ffffff");
+    sheet.appendRow(["email","password","name","token","last_login"]);
+    sheet.getRange(1,1,1,5).setFontWeight("bold").setBackground("#1a3a2a").setFontColor("#ffffff");
     sheet.setFrozenRows(1);
-    // Add default super admin
-    sheet.appendRow(["admin@agri.kerala.gov.in", "AgriAdmin@2025", "Super Admin", "", ""]);
+    // Default super admin row
+    sheet.appendRow(["admin@agri.kerala.gov.in","AgriAdmin@2025","Super Admin","",""]);
   }
 }
 
-function jsonResponse(data, code) {
-  const output = ContentService.createTextOutput(JSON.stringify(data))
+function jsonResponse(data) {
+  return ContentService.createTextOutput(JSON.stringify(data))
     .setMimeType(ContentService.MimeType.JSON);
-  return output;
 }
 
 /**
- * ONE-TIME SETUP: Run this manually in Apps Script editor to initialise sheets
- * Extensions → Apps Script → Run → setupSheet
+ * ONE-TIME SETUP — Run this manually in Apps Script editor
+ * Extensions → Apps Script → select setupSheet → Run
  */
 function setupSheet() {
   const appsSheet  = getSheet(SHEET_NAME);
   const adminSheet = getSheet(ADMIN_SHEET);
-  Logger.log("Setup complete. Sheets: Apps + Admins initialized.");
-
-  // Add sample apps if Apps sheet is empty
-  const samples = [
-    ["1", "Crop Disease Tracker", "Monitor crop disease outbreaks", "https://example.gov.in/crop", "🌾", "field", "2025-06-10"],
-    ["2", "Farmer Registration MIS", "Central MIS for farmer data", "https://example.gov.in/farmer", "👨‍🌾", "field", "2025-05-22"],
-    ["3", "Subsidy Disbursement Portal", "Track subsidy disbursements", "https://example.gov.in/subsidy", "💰", "finance", "2025-05-18"],
-  ];
-  if (appsSheet.getLastRow() === 1) {
-    samples.forEach(row => appsSheet.appendRow(row));
-    Logger.log("Sample apps added.");
-  }
+  Logger.log("✅ Setup complete. Apps + Admins sheets ready.");
+  Logger.log("Default admin: admin@agri.kerala.gov.in / AgriAdmin@2025");
 }
