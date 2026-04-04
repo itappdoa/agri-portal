@@ -1,204 +1,262 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Login — AgriTech Portal</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --forest:#1b3a2d; --leaf:#2d6a4f; --sage:#40916c; --mint:#74c69d;
-      --cream:#f7f4ed; --sand:#ede8d8; --white:#ffffff;
-      --ink:#111a14; --gray:#6b7c70; --line:#e0ddd4;
-      --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-      --font-display:'Playfair Display',Georgia,serif;
+      --forest: #1b3a2d;
+      --leaf: #2d6a4f;
+      --sage: #40916c;
+      --mint: #74c69d;
+      --cream: #f7f4ed;
+      --sand: #ede8d8;
+      --white: #ffffff;
+      --ink: #111a14;
+      --gray: #6b7c70;
+      --line: #e0ddd4;
+      --font: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-display: 'Playfair Display', Georgia, serif;
     }
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    html,body{height:100%;}
-    body{
-      font-family:var(--font);
-      background:var(--cream);
-      color:var(--ink);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      min-height:100vh;
-      overflow:hidden;
-    }
-
-    /* Subtle background */
-    .bg-blob{position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0;}
-    .bg-blob-1{width:450px;height:450px;background:radial-gradient(circle,#74c69d33,#2d6a4f11);top:-120px;right:-80px;animation:bd1 20s ease-in-out infinite;}
-    .bg-blob-2{width:300px;height:300px;background:radial-gradient(circle,#f4a81811,#c8960c08);bottom:40px;left:-60px;animation:bd2 25s ease-in-out infinite;}
-    @keyframes bd1{0%,100%{transform:translate(0,0)}50%{transform:translate(-20px,30px)}}
-    @keyframes bd2{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-20px)}}
-
-    /* Login card */
-    .login-wrap{
-      position:relative;z-index:2;
-      width:100%;max-width:420px;
-      padding:24px;
-      animation:fadeUp 0.45s ease both;
-    }
-    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-
-    .login-logo{text-align:center;margin-bottom:28px;}
-    .login-emblem{
-      width:60px;height:60px;
-      background:linear-gradient(135deg,var(--leaf),var(--sage));
-      border-radius:18px;
-      display:inline-flex;align-items:center;justify-content:center;
-      font-size:28px;line-height:1;
-      margin-bottom:14px;
-    }
-    .login-logo h2{font-family:var(--font-display);font-size:26px;color:var(--forest);margin-bottom:4px;}
-    .login-logo p{font-size:13px;color:var(--gray);}
-
-    .login-card{
-      background:var(--white);
-      border:1.5px solid var(--line);
-      border-radius:18px;
-      padding:32px;
-      box-shadow:0 8px 40px rgba(27,58,45,0.11);
+    *, before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: var(--font);
+      background: var(--cream);
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
     }
 
-    .error-box{
-      background:#fff5f5;
-      border:1px solid #fca5a5;
-      color:#dc2626;
-      font-size:13px;
-      padding:12px 14px;
-      border-radius:10px;
-      margin-bottom:18px;
-      display:none;
+    /* Subtle background blobs */
+    .bg-blob { position: fixed; border-radius: 50%; filter: blur(90px); pointer-events: none; z-index: 0; }
+    .bg-blob-1 { width: 450px; height: 450px; background: radial-gradient(circle, #74c69d33, #2d6a4f11); top: -120px; right: -80px; animation: bd1 20s ease-in-out infinite; }
+    .bg-blob-2 { width: 300px; height: 300px; background: radial-gradient(circle, #f4a81811, #c8960c08); bottom: 40px; left: -60px; animation: bd2 25s ease-in-out infinite; }
+    @keyframes bd1 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-20px, 30px); } }
+    @keyframes bd2 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(30px, -20px); } }
+
+    .login-wrap { position: relative; z-index: 2; width: 100%; max-width: 420px; padding: 24px; animation: fadeUp 0.45s ease both; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    .login-logo { text-align: center; margin-bottom: 28px; }
+    .login-emblem {
+      width: 60px; height: 60px;
+      background: linear-gradient(135deg, var(--leaf), var(--sage));
+      border-radius: 18px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 28px; line-height: 1;
+      margin-bottom: 14px;
+    }
+    .login-logo h2 { font-family: var(--font-display); font-size: 26px; color: var(--forest); margin-bottom: 4px; }
+    .login-logo p { font-size: 13px; color: var(--gray); }
+
+    .login-card {
+      background: var(--white);
+      border: 1.5px solid var(--line);
+      border-radius: 18px;
+      padding: 32px;
+      box-shadow: 0 8px 40px rgba(27,58,45,0.11);
     }
 
-    .form-group{margin-bottom:18px;}
-    .form-label{display:block;font-size:11px;font-weight:600;color:var(--forest);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:7px;}
-    .form-input{
-      width:100%;padding:12px 14px;
-      font-family:var(--font);font-size:14px;color:var(--ink);
-      background:var(--cream);
-      border:1.5px solid var(--line);border-radius:10px;
-      outline:none;transition:border-color 0.2s,box-shadow 0.2s;
-    }
-    .form-input:focus{border-color:var(--mint);box-shadow:0 0 0 3px rgba(116,198,157,0.2);}
-
-    .login-btn{
-      width:100%;padding:13px;
-      background:var(--forest);color:#fff;
-      font-family:var(--font);font-size:14px;font-weight:600;
-      border:none;border-radius:11px;
-      cursor:pointer;transition:all 0.2s;
-      letter-spacing:0.03em;margin-top:4px;
-    }
-    .login-btn:hover{background:var(--leaf);transform:translateY(-1px);}
-    .login-btn:active{transform:translateY(0);}
-    .login-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
-
-    .security-note{
-      display:flex;align-items:center;gap:8px;
-      margin-top:18px;padding:11px 13px;
-      background:rgba(64,145,108,0.07);
-      border:1px solid rgba(64,145,108,0.18);
-      border-radius:9px;
-      font-size:12px;color:var(--gray);
-      line-height:1.4;
+    .error-box {
+      background: #fff5f5;
+      border: 1px solid #fca5a5;
+      color: #dc2626;
+      font-size: 13px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      margin-bottom: 18px;
+      display: none;
     }
 
-    .back-link{
-      display:block;text-align:center;margin-top:22px;
-      color:var(--gray);font-size:13px;text-decoration:none;
-      transition:color 0.18s;
+    .form-group { margin-bottom: 18px; }
+    .form-label { display: block; font-size: 11px; font-weight: 600; color: var(--forest); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 7px; }
+    .form-input {
+      width: 100%; padding: 12px 14px;
+      font-family: var(--font); font-size: 14px; color: var(--ink);
+      background: var(--cream);
+      border: 1.5px solid var(--line);
+      border-radius: 10px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .back-link:hover{color:var(--leaf);}
+    .form-input:focus { border-color: var(--mint); box-shadow: 0 0 0 3px rgba(116,198,157,0.2); }
+
+    .login-btn {
+      width: 100%; padding: 13px;
+      background: var(--forest); color: #fff;
+      font-family: var(--font); font-size: 14px; font-weight: 600;
+      border: none; border-radius: 11px;
+      cursor: pointer; transition: all 0.2s;
+      letter-spacing: 0.03em; margin-top: 4px;
+    }
+    .login-btn:hover { background: var(--leaf); transform: translateY(-1px); }
+    .login-btn:active { transform: translateY(0); }
+    .login-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .security-note {
+      display: flex; align-items: center; gap: 8px;
+      margin-top: 18px; padding: 11px 13px;
+      background: rgba(64,145,108,0.07);
+      border: 1px solid rgba(64,145,108,0.18);
+      border-radius: 9px;
+      font-size: 12px; color: var(--gray); line-height: 1.4;
+    }
+
+    .back-link { display: block; text-align: center; margin-top: 22px; color: var(--gray); font-size: 13px; text-decoration: none; transition: color 0.18s; }
+    .back-link:hover { color: var(--leaf); }
   </style>
 </head>
 <body>
+  <div class="bg-blob bg-blob-1"></div>
+  <div class="bg-blob bg-blob-2"></div>
 
-<div class="bg-blob bg-blob-1"></div>
-<div class="bg-blob bg-blob-2"></div>
+  <div class="login-wrap">
+    <div class="login-logo">
+      <div class="login-emblem">🌿</div>
+      <h2>Admin Login</h2>
+      <p>Agriculture Department IT Cell, Kerala</p>
+    </div>
 
-<div class="login-wrap">
-  <div class="login-logo">
-    <div class="login-emblem">🌿</div>
-    <h2>Admin Login</h2>
-    <p>Agriculture Department IT Cell · Kerala</p>
+    <div class="login-card">
+      <div class="error-box" id="errorBox">Invalid email or password. Please try again.</div>
+
+      <div class="form-group">
+        <label class="form-label" for="email">Email Address</label>
+        <input type="email" id="email" class="form-input" placeholder="admin@agri.kerala.gov.in" autocomplete="username">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Password</label>
+        <input type="password" id="password" class="form-input" placeholder="Enter your password" autocomplete="current-password">
+      </div>
+
+      <button class="login-btn" id="loginBtn" onclick="doLogin()">Sign In to Admin Panel</button>
+
+      <div class="security-note">
+        🔒 Authorised IT Cell staff only. All access is logged and monitored.
+      </div>
+    </div>
+
+    <a href="../index.html" class="back-link">← Back to Portal</a>
   </div>
 
-  <div class="login-card">
-    <div class="error-box" id="errorBox">Invalid email or password. Please try again.</div>
+  <script>
+    // ============================================================
+    //  CONFIG — must match your Apps Script deployment
+    // ============================================================
+    const API_URL        = "https://script.google.com/macros/s/AKfycbwTFslOra6l_N082o_aYOnKqTEEYeB0DiFtkAbz-QyPZ7qWRCBl8zeYocqQQmONGHAGpA/exec";
+    const ADMIN_EMAIL    = "admin@agri.kerala.gov.in";
+    const ADMIN_PASSWORD = "AgriAdmin@2025";
 
-    <div class="form-group">
-      <label class="form-label" for="email">Email Address</label>
-      <input type="email" id="email" class="form-input" placeholder="admin@agri.kerala.gov.in" autocomplete="username"/>
-    </div>
+    // Pre-fill remembered email
+    const saved = localStorage.getItem("agri_admin_email");
+    if (saved) document.getElementById("email").value = saved;
 
-    <div class="form-group">
-      <label class="form-label" for="password">Password</label>
-      <input type="password" id="password" class="form-input" placeholder="Enter your password" autocomplete="current-password"/>
-    </div>
-
-    <button class="login-btn" id="loginBtn" onclick="doLogin()">Sign In to Admin Panel</button>
-
-    <div class="security-note">
-      🔒 Authorised IT Cell staff only. All access is logged and monitored.
-    </div>
-  </div>
-
-  <a href="../index.html" class="back-link">← Back to Portal</a>
-</div>
-
-<script>
-  // Inline config (no external data.js needed on login page)
-  const ADMIN_EMAIL    = "admin@agri.kerala.gov.in";
-  const ADMIN_PASSWORD = "AgriAdmin@2025";
-
-  // Pre-fill remembered email
-  const saved = localStorage.getItem("agri_admin_email");
-  if (saved) document.getElementById("email").value = saved;
-
-  function getAdminList() {
-    try {
-      const raw = localStorage.getItem("agri_admin_users");
-      if (raw) return JSON.parse(raw);
-    } catch(e) {}
-    return [{ email: ADMIN_EMAIL, password: ADMIN_PASSWORD, name: "Super Admin" }];
-  }
-
-  function doLogin() {
-    const email = document.getElementById("email").value.trim();
-    const pass  = document.getElementById("password").value;
-    const errEl = document.getElementById("errorBox");
-    const btn   = document.getElementById("loginBtn");
-
-    if (!email || !pass) {
-      errEl.style.display = "block";
-      errEl.textContent   = "Please enter both email and password.";
-      return;
+    // Local admin list fallback (used if API is unreachable)
+    function getLocalAdminList() {
+      try {
+        const raw = localStorage.getItem("agri_admin_users");
+        if (raw) return JSON.parse(raw);
+      } catch (e) {}
+      return [{ email: ADMIN_EMAIL, password: ADMIN_PASSWORD, name: "Super Admin" }];
     }
 
-    const admins  = getAdminList();
-    const matched = admins.find(a => a.email === email && a.password === pass);
+    // ============================================================
+    //  LOGIN — tries Google Sheet (API) first, falls back to local
+    // ============================================================
+    async function doLogin() {
+      const email  = document.getElementById("email").value.trim();
+      const pass   = document.getElementById("password").value;
+      const errEl  = document.getElementById("errorBox");
+      const btn    = document.getElementById("loginBtn");
 
-    if (matched) {
       errEl.style.display = "none";
-      btn.disabled        = true;
-      btn.textContent     = "Signing in…";
-      localStorage.setItem("agri_admin_session", JSON.stringify({ email, ts: Date.now() }));
-      localStorage.setItem("agri_admin_email", email);
-      setTimeout(() => { window.location.href = "panel.html"; }, 500);
-    } else {
-      errEl.style.display = "block";
-      errEl.textContent   = "Invalid email or password. Please try again.";
-      document.getElementById("password").value = "";
-      document.getElementById("password").focus();
-    }
-  }
 
-  document.addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
-</script>
+      if (!email || !pass) {
+        errEl.style.display = "block";
+        errEl.textContent = "Please enter both email and password.";
+        return;
+      }
+
+      btn.disabled    = true;
+      btn.textContent = "Signing in…";
+
+      // ✅ STEP 1: Try Apps Script API authentication (checks Google Sheet)
+      //    This allows admins added from any browser to log in.
+      try {
+        const res  = await fetch(API_URL, {
+          method:  "POST",
+          headers: { "Content-Type": "text/plain" },
+          body:    JSON.stringify({ action: "login", email, password: pass }),
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          // API auth succeeded — store token for future API write operations
+          localStorage.setItem("agri_admin_session", JSON.stringify({
+            email,
+            token: data.token,
+            name:  data.name || email,
+            ts:    Date.now(),
+          }));
+          localStorage.setItem("agri_admin_email", email);
+          btn.textContent = "✓ Redirecting…";
+          setTimeout(() => { window.location.href = "panel.html"; }, 500);
+          return;
+        }
+
+        // API responded but credentials were wrong
+        if (data.error) {
+          // Don't fall through to local — wrong credentials are wrong credentials
+          throw new Error("bad_credentials");
+        }
+      } catch (err) {
+        if (err.message === "bad_credentials") {
+          errEl.style.display = "block";
+          errEl.textContent   = "Invalid email or password. Please try again.";
+          document.getElementById("password").value = "";
+          document.getElementById("password").focus();
+          btn.disabled    = false;
+          btn.textContent = "Sign In to Admin Panel";
+          return;
+        }
+        // API unreachable (network error, CORS, etc.) — fall through to local
+        console.warn("API auth failed, trying local fallback:", err);
+      }
+
+      // ✅ STEP 2: Fallback to localStorage (offline / API unreachable)
+      const admins = getLocalAdminList();
+      const matched = admins.find(a => a.email === email && a.password === pass);
+
+      if (matched) {
+        localStorage.setItem("agri_admin_session", JSON.stringify({
+          email,
+          token: "",   // no token in local-only mode
+          name:  matched.name || email,
+          ts:    Date.now(),
+        }));
+        localStorage.setItem("agri_admin_email", email);
+        btn.textContent = "✓ Redirecting…";
+        setTimeout(() => { window.location.href = "panel.html"; }, 500);
+      } else {
+        errEl.style.display = "block";
+        errEl.textContent   = "Invalid email or password. Please try again.";
+        document.getElementById("password").value = "";
+        document.getElementById("password").focus();
+        btn.disabled    = false;
+        btn.textContent = "Sign In to Admin Panel";
+      }
+    }
+
+    document.addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
+  </script>
 </body>
 </html>
