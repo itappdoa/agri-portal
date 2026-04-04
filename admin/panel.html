@@ -8,288 +8,127 @@
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
 <style>
 :root {
-  --forest: #1a3a2a;
-  --leaf:   #2d6a4f;
-  --sage:   #52b788;
-  --mint:   #95d5b2;
-  --gold:   #d4a017;
-  --amber:  #e8b84b;
-  --cream:  #f8f4e8;
-  --sand:   #ede8d8;
-  --ink:    #0f1f15;
-  --muted:  #5a6e5e;
-  --line:   rgba(45,106,79,0.15);
+  --forest: #1a3a2a; --leaf: #2d6a4f; --sage: #52b788; --mint: #95d5b2;
+  --gold: #d4a017; --amber: #e8b84b; --cream: #f8f4e8; --sand: #ede8d8;
+  --ink: #0f1f15; --muted: #5a6e5e; --line: rgba(45,106,79,0.15);
   --radius: 14px;
-  --font-body:    'Sora', system-ui, sans-serif;
-  --font-display: 'DM Serif Display', Georgia, serif;
+  --font-body: \'Sora\', system-ui, sans-serif;
+  --font-display: \'DM Serif Display\', Georgia, serif;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: var(--font-body); background: #f0ede4; color: var(--ink); min-height: 100vh; }
 
-/* ---- Layout ---- */
 .layout { display: flex; min-height: 100vh; }
 
-/* ---- Sidebar ---- */
+/* Sidebar */
 .sidebar {
-  width: 240px; flex-shrink: 0;
-  background: var(--forest);
+  width: 240px; flex-shrink: 0; background: var(--forest);
   display: flex; flex-direction: column;
   position: fixed; top: 0; left: 0; bottom: 0; z-index: 50;
 }
-.sidebar-brand {
-  padding: 24px 20px;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-  display: flex; align-items: center; gap: 10px;
-}
+.sidebar-brand { padding: 24px 20px; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 10px; }
 .brand-icon { font-size: 22px; }
 .brand-label { font-size: 13px; font-weight: 600; color: var(--cream); line-height: 1.3; }
-.brand-sub   { font-size: 10px; color: rgba(149,213,178,0.6); display: block; }
+.brand-sub { font-size: 10px; color: rgba(149,213,178,0.6); display: block; }
 .sidebar-nav { flex: 1; padding: 16px 10px; display: flex; flex-direction: column; gap: 4px; }
 .nav-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 12px; border-radius: 10px;
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px;
   color: rgba(149,213,178,0.7); font-size: 13px; font-weight: 500;
-  cursor: pointer; transition: all 0.2s; border: none; background: none;
-  width: 100%; text-align: left;
+  cursor: pointer; transition: all 0.2s; border: none; background: none; width: 100%; text-align: left;
 }
 .nav-item:hover  { background: rgba(255,255,255,0.06); color: var(--mint); }
 .nav-item.active { background: rgba(82,183,136,0.18); color: var(--mint); }
 .nav-item .ni { font-size: 16px; }
-.sidebar-foot {
-  padding: 16px 10px;
-  border-top: 1px solid rgba(255,255,255,0.08);
-}
-.admin-info {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 12px; background: rgba(255,255,255,0.05);
-  border-radius: 10px; margin-bottom: 8px;
-}
-.admin-avatar {
-  width: 32px; height: 32px;
-  background: linear-gradient(135deg, var(--sage), var(--gold));
-  border-radius: 50%; display: flex; align-items: center;
-  justify-content: center; font-size: 12px; font-weight: 700;
-  color: #fff; flex-shrink: 0;
-}
+.sidebar-foot { padding: 16px 10px; border-top: 1px solid rgba(255,255,255,0.08); }
+.admin-info { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-bottom: 8px; }
+.admin-avatar { width: 32px; height: 32px; background: linear-gradient(135deg, var(--sage), var(--gold)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0; }
 .admin-name { font-size: 12px; color: var(--cream); font-weight: 500; }
 .admin-role { font-size: 10px; color: rgba(149,213,178,0.5); }
-.logout-btn {
-  width: 100%; padding: 9px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 9px; color: rgba(149,213,178,0.7);
-  font-family: var(--font-body); font-size: 12px;
-  cursor: pointer; transition: all 0.2s;
-}
+.logout-btn { width: 100%; padding: 9px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 9px; color: rgba(149,213,178,0.7); font-family: var(--font-body); font-size: 12px; cursor: pointer; transition: all 0.2s; }
 .logout-btn:hover { background: rgba(220,38,38,0.15); color: #fca5a5; border-color: rgba(220,38,38,0.3); }
 
-/* ---- Main ---- */
+/* Main */
 .main { margin-left: 240px; flex: 1; padding: 32px; }
-.page-header {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 32px; gap: 16px;
-}
-.page-title    { font-family: var(--font-display); font-size: 28px; color: var(--forest); }
+.page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; gap: 16px; }
+.page-title { font-family: var(--font-display); font-size: 28px; color: var(--forest); }
 .page-subtitle { font-size: 13px; color: var(--muted); margin-top: 2px; }
-.add-btn {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: var(--forest); color: var(--cream);
-  font-family: var(--font-body); font-size: 13px; font-weight: 600;
-  padding: 11px 20px; border: none; border-radius: 11px;
-  cursor: pointer; transition: all 0.2s; white-space: nowrap; letter-spacing: 0.03em;
-}
+.add-btn { display: inline-flex; align-items: center; gap: 8px; background: var(--forest); color: var(--cream); font-family: var(--font-body); font-size: 13px; font-weight: 600; padding: 11px 20px; border: none; border-radius: 11px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
 .add-btn:hover { background: var(--leaf); transform: translateY(-1px); }
 
-/* ---- Stats bar ---- */
-.stats-bar {
-  display: grid; grid-template-columns: repeat(4,1fr);
-  gap: 16px; margin-bottom: 32px;
-}
-.stat-card {
-  background: #fff; border: 1.5px solid var(--line);
-  border-radius: 14px; padding: 20px;
-  display: flex; align-items: center; gap: 14px;
-}
-.stat-icon {
-  width: 44px; height: 44px; border-radius: 12px;
-  display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;
-}
+/* Stats */
+.stats-bar { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 32px; }
+.stat-card { background: #fff; border: 1.5px solid var(--line); border-radius: 14px; padding: 20px; display: flex; align-items: center; gap: 14px; }
+.stat-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
 .stat-val { font-size: 24px; font-family: var(--font-display); color: var(--forest); }
 .stat-lbl { font-size: 11px; color: var(--muted); }
 
-/* ---- Table card ---- */
-.table-card {
-  background: #fff; border: 1.5px solid var(--line);
-  border-radius: var(--radius); overflow: hidden;
-  box-shadow: 0 2px 16px rgba(26,58,42,0.06);
-}
-.table-toolbar {
-  display: flex; align-items: center; gap: 12px;
-  padding: 16px 20px; border-bottom: 1.5px solid var(--line);
-}
-.table-search {
-  flex: 1; padding: 9px 14px;
-  font-family: var(--font-body); font-size: 13px; color: var(--forest);
-  background: var(--cream); border: 1.5px solid var(--line);
-  border-radius: 9px; outline: none; transition: all 0.2s;
-}
+/* Table */
+.table-card { background: #fff; border: 1.5px solid var(--line); border-radius: var(--radius); overflow: hidden; box-shadow: 0 2px 16px rgba(26,58,42,0.06); }
+.table-toolbar { display: flex; align-items: center; gap: 12px; padding: 16px 20px; border-bottom: 1.5px solid var(--line); }
+.table-search { flex: 1; padding: 9px 14px; font-family: var(--font-body); font-size: 13px; color: var(--forest); background: var(--cream); border: 1.5px solid var(--line); border-radius: 9px; outline: none; transition: all 0.2s; }
 .table-search:focus { border-color: var(--sage); box-shadow: 0 0 0 3px rgba(82,183,136,0.15); }
 .table-wrap { overflow-x: auto; }
-table  { width: 100%; border-collapse: collapse; }
-th {
-  text-align: left; font-size: 11px; font-weight: 600;
-  letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
-  padding: 12px 20px; background: var(--cream);
-  border-bottom: 1.5px solid var(--line);
-}
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); padding: 12px 20px; background: var(--cream); border-bottom: 1.5px solid var(--line); }
 td { padding: 14px 20px; border-bottom: 1px solid var(--line); vertical-align: middle; }
 tr:last-child td { border-bottom: none; }
 tr:hover td { background: rgba(82,183,136,0.03); }
-.td-icon {
-  width: 38px; height: 38px; border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px; border: 1.5px solid var(--line); overflow: hidden;
-}
+.td-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; border: 1.5px solid var(--line); overflow: hidden; }
 .td-icon img { width: 100%; height: 100%; object-fit: cover; }
 .td-icon.icon-auto { font-size: 13px; font-weight: 700; color: #fff; }
 .td-name { font-weight: 600; font-size: 13px; color: var(--forest); }
 .td-desc { font-size: 12px; color: var(--muted); max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .td-url  { font-size: 12px; color: var(--sage);  max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.cat-pill {
-  display: inline-block; font-size: 10px; font-weight: 600;
-  letter-spacing: 0.06em; text-transform: uppercase;
-  padding: 3px 10px; border-radius: 50px;
-  background: rgba(82,183,136,0.12); color: var(--leaf);
-  border: 1px solid rgba(82,183,136,0.25); white-space: nowrap;
-}
+.cat-pill { display: inline-block; font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 10px; border-radius: 50px; background: rgba(82,183,136,0.12); color: var(--leaf); border: 1px solid rgba(82,183,136,0.25); white-space: nowrap; }
 .action-btns { display: flex; gap: 6px; }
-.act-btn {
-  padding: 6px 12px; border-radius: 7px; cursor: pointer;
-  font-family: var(--font-body); font-size: 11.5px; font-weight: 600;
-  border: 1.5px solid; transition: all 0.2s; white-space: nowrap;
-}
+.act-btn { padding: 6px 12px; border-radius: 7px; cursor: pointer; font-family: var(--font-body); font-size: 11.5px; font-weight: 600; border: 1.5px solid; transition: all 0.2s; white-space: nowrap; }
 .act-edit { background: rgba(82,183,136,0.08); color: var(--leaf); border-color: rgba(82,183,136,0.3); }
 .act-edit:hover { background: rgba(82,183,136,0.18); }
-.act-del  { background: rgba(220,38,38,0.06);  color: #dc2626;    border-color: rgba(220,38,38,0.2); }
+.act-del  { background: rgba(220,38,38,0.06); color: #dc2626; border-color: rgba(220,38,38,0.2); }
 .act-del:hover  { background: rgba(220,38,38,0.14); }
 .empty-row td { text-align: center; padding: 48px; color: var(--muted); font-size: 14px; }
 
-/* ---- Modal ---- */
-.modal-overlay {
-  display: none; position: fixed; inset: 0; z-index: 200;
-  background: rgba(15,31,21,0.55); backdrop-filter: blur(6px);
-  align-items: center; justify-content: center; padding: 24px;
-}
+/* Modal */
+.modal-overlay { display: none; position: fixed; inset: 0; z-index: 200; background: rgba(15,31,21,0.55); backdrop-filter: blur(6px); align-items: center; justify-content: center; padding: 24px; }
 .modal-overlay.open { display: flex; }
-.modal {
-  background: #fff; border-radius: 20px; padding: 32px;
-  width: 100%; max-width: 540px;
-  box-shadow: 0 24px 80px rgba(26,58,42,0.22);
-  animation: slideUp 0.3s ease;
-  max-height: 90vh; overflow-y: auto;
-}
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.modal-head {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 24px;
-}
+.modal { background: #fff; border-radius: 20px; padding: 32px; width: 100%; max-width: 540px; box-shadow: 0 24px 80px rgba(26,58,42,0.22); animation: slideUp 0.3s ease; max-height: 90vh; overflow-y: auto; }
+@keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+.modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
 .modal-title { font-family: var(--font-display); font-size: 22px; color: var(--forest); }
-.modal-close {
-  width: 32px; height: 32px; border-radius: 8px;
-  background: var(--cream); border: 1.5px solid var(--line);
-  cursor: pointer; font-size: 18px; color: var(--muted);
-  display: flex; align-items: center; justify-content: center; transition: all 0.2s;
-}
+.modal-close { width: 32px; height: 32px; border-radius: 8px; background: var(--cream); border: 1.5px solid var(--line); cursor: pointer; font-size: 18px; color: var(--muted); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
 .modal-close:hover { background: var(--sand); }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .form-group { margin-bottom: 18px; }
-.form-label {
-  display: block; font-size: 11px; font-weight: 600; color: var(--forest);
-  letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 7px;
-}
-.form-input, .form-textarea, .form-select {
-  width: 100%; padding: 11px 14px;
-  font-family: var(--font-body); font-size: 13.5px; color: var(--forest);
-  background: var(--cream); border: 1.5px solid var(--line);
-  border-radius: 10px; outline: none; transition: all 0.2s;
-}
+.form-label { display: block; font-size: 11px; font-weight: 600; color: var(--forest); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 7px; }
+.form-input, .form-textarea, .form-select { width: 100%; padding: 11px 14px; font-family: var(--font-body); font-size: 13.5px; color: var(--forest); background: var(--cream); border: 1.5px solid var(--line); border-radius: 10px; outline: none; transition: all 0.2s; }
 .form-textarea { min-height: 90px; resize: vertical; }
-.form-input:focus, .form-textarea:focus, .form-select:focus {
-  border-color: var(--sage); box-shadow: 0 0 0 3px rgba(82,183,136,0.15);
-}
+.form-input:focus, .form-textarea:focus, .form-select:focus { border-color: var(--sage); box-shadow: 0 0 0 3px rgba(82,183,136,0.15); }
 .form-help { font-size: 11px; color: var(--muted); margin-top: 5px; }
-.icon-preview-box {
-  display: flex; align-items: center; gap: 14px;
-  padding: 14px; background: var(--cream); border-radius: 10px; margin-bottom: 18px;
-}
-.icon-preview {
-  width: 52px; height: 52px; border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 24px; border: 1.5px solid var(--line); flex-shrink: 0; overflow: hidden;
-}
+.icon-preview-box { display: flex; align-items: center; gap: 14px; padding: 14px; background: var(--cream); border-radius: 10px; margin-bottom: 18px; }
+.icon-preview { width: 52px; height: 52px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 1.5px solid var(--line); flex-shrink: 0; overflow: hidden; }
 .icon-preview img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
 .icon-preview-text { font-size: 12px; color: var(--muted); }
-.modal-actions {
-  display: flex; gap: 10px; justify-content: flex-end;
-  margin-top: 24px; padding-top: 20px; border-top: 1.5px solid var(--line);
-}
-.btn-cancel {
-  padding: 10px 20px; background: var(--cream);
-  border: 1.5px solid var(--line); border-radius: 10px;
-  font-family: var(--font-body); font-size: 13px; color: var(--muted);
-  cursor: pointer; transition: all 0.2s;
-}
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; padding-top: 20px; border-top: 1.5px solid var(--line); }
+.btn-cancel { padding: 10px 20px; background: var(--cream); border: 1.5px solid var(--line); border-radius: 10px; font-family: var(--font-body); font-size: 13px; color: var(--muted); cursor: pointer; transition: all 0.2s; }
 .btn-cancel:hover { background: var(--sand); }
-.btn-save {
-  padding: 10px 24px; background: var(--forest); color: var(--cream);
-  border: none; border-radius: 10px;
-  font-family: var(--font-body); font-size: 13px; font-weight: 600;
-  cursor: pointer; transition: all 0.2s;
-}
+.btn-save { padding: 10px 24px; background: var(--forest); color: var(--cream); border: none; border-radius: 10px; font-family: var(--font-body); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
 .btn-save:hover { background: var(--leaf); }
 
-/* ---- Toast ---- */
-.toast {
-  position: fixed; bottom: 24px; right: 24px; z-index: 999;
-  background: var(--forest); color: var(--cream);
-  padding: 14px 20px; border-radius: 12px;
-  font-size: 13px; font-weight: 500;
-  box-shadow: 0 8px 32px rgba(26,58,42,0.25);
-  transform: translateY(80px); opacity: 0; transition: all 0.3s ease;
-  display: flex; align-items: center; gap: 10px;
-}
+/* Toast */
+.toast { position: fixed; bottom: 24px; right: 24px; z-index: 999; background: var(--forest); color: var(--cream); padding: 14px 20px; border-radius: 12px; font-size: 13px; font-weight: 500; box-shadow: 0 8px 32px rgba(26,58,42,0.25); transform: translateY(80px); opacity: 0; transition: all 0.3s ease; display: flex; align-items: center; gap: 10px; }
 .toast.show { transform: translateY(0); opacity: 1; }
 
-/* ---- Confirm dialog ---- */
-.confirm-overlay {
-  display: none; position: fixed; inset: 0; z-index: 300;
-  background: rgba(15,31,21,0.6); backdrop-filter: blur(4px);
-  align-items: center; justify-content: center;
-}
+/* Confirm */
+.confirm-overlay { display: none; position: fixed; inset: 0; z-index: 300; background: rgba(15,31,21,0.6); backdrop-filter: blur(4px); align-items: center; justify-content: center; }
 .confirm-overlay.open { display: flex; }
-.confirm-box {
-  background: #fff; border-radius: 16px; padding: 28px 28px 24px;
-  width: 340px; box-shadow: 0 16px 60px rgba(26,58,42,0.2);
-  text-align: center; animation: slideUp 0.25s ease;
-}
+.confirm-box { background: #fff; border-radius: 16px; padding: 28px; width: 340px; box-shadow: 0 16px 60px rgba(26,58,42,0.2); text-align: center; animation: slideUp 0.25s ease; }
 .confirm-icon  { font-size: 36px; margin-bottom: 12px; }
 .confirm-title { font-family: var(--font-display); font-size: 20px; color: var(--forest); margin-bottom: 8px; }
 .confirm-msg   { font-size: 13px; color: var(--muted); margin-bottom: 24px; line-height: 1.5; }
 .confirm-btns  { display: flex; gap: 10px; }
-.confirm-cancel {
-  flex: 1; padding: 10px; background: var(--cream);
-  border: 1.5px solid var(--line); border-radius: 10px;
-  font-family: var(--font-body); font-size: 13px; color: var(--muted); cursor: pointer; transition: all 0.2s;
-}
+.confirm-cancel { flex: 1; padding: 10px; background: var(--cream); border: 1.5px solid var(--line); border-radius: 10px; font-family: var(--font-body); font-size: 13px; color: var(--muted); cursor: pointer; transition: all 0.2s; }
 .confirm-cancel:hover { background: var(--sand); }
-.confirm-del {
-  flex: 1; padding: 10px; background: #dc2626; color: #fff;
-  border: none; border-radius: 10px;
-  font-family: var(--font-body); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;
-}
+.confirm-del { flex: 1; padding: 10px; background: #dc2626; color: #fff; border: none; border-radius: 10px; font-family: var(--font-body); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
 .confirm-del:hover { background: #b91c1c; }
 
 @media (max-width: 768px) {
@@ -314,13 +153,13 @@ tr:hover td { background: rgba(82,183,136,0.03); }
       </div>
     </div>
     <nav class="sidebar-nav">
-      <button class="nav-item active" onclick="showSection('apps')">
+      <button class="nav-item active" onclick="showSection(\'apps\')">
         <span class="ni">📋</span><span>App Cards</span>
       </button>
-      <button class="nav-item" onclick="showSection('admins')">
+      <button class="nav-item" onclick="showSection(\'admins\')">
         <span class="ni">👥</span><span>Manage Admins</span>
       </button>
-      <button class="nav-item" onclick="window.open('../index.html','_blank')">
+      <button class="nav-item" onclick="window.open(\'index.html\',\'_blank\')">
         <span class="ni">🌐</span><span>View Portal</span>
       </button>
     </nav>
@@ -348,8 +187,7 @@ tr:hover td { background: rgba(82,183,136,0.03); }
         </div>
         <button class="add-btn" onclick="openModal()">＋ Add New App</button>
       </div>
-
-      <div class="stats-bar" id="statsBar">
+      <div class="stats-bar">
         <div class="stat-card">
           <div class="stat-icon" style="background:rgba(45,106,79,0.1)">📋</div>
           <div><div class="stat-val" id="sTotal">0</div><div class="stat-lbl">Total Apps</div></div>
@@ -367,7 +205,6 @@ tr:hover td { background: rgba(82,183,136,0.03); }
           <div><div class="stat-val" id="sAdmins">0</div><div class="stat-lbl">Admin Users</div></div>
         </div>
       </div>
-
       <div class="table-card">
         <div class="table-toolbar">
           <input type="text" class="table-search" id="tableSearch" placeholder="Search apps…" oninput="renderTable()">
@@ -375,10 +212,7 @@ tr:hover td { background: rgba(82,183,136,0.03); }
         <div class="table-wrap">
           <table>
             <thead>
-              <tr>
-                <th>Icon</th><th>App Name</th><th>Description</th>
-                <th>URL</th><th>Category</th><th>Date Added</th><th>Actions</th>
-              </tr>
+              <tr><th>Icon</th><th>App Name</th><th>Description</th><th>URL</th><th>Category</th><th>Date Added</th><th>Actions</th></tr>
             </thead>
             <tbody id="appTableBody"></tbody>
           </table>
@@ -398,9 +232,7 @@ tr:hover td { background: rgba(82,183,136,0.03); }
       <div class="table-card">
         <div class="table-wrap">
           <table>
-            <thead>
-              <tr><th>Name</th><th>Email</th><th>Role</th><th>Actions</th></tr>
-            </thead>
+            <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Actions</th></tr></thead>
             <tbody id="adminTableBody"></tbody>
           </table>
         </div>
@@ -417,14 +249,11 @@ tr:hover td { background: rgba(82,183,136,0.03); }
       <div class="modal-title" id="modalTitle">Add New Application</div>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
-
     <div class="icon-preview-box">
       <div class="icon-preview" id="iconPreview"></div>
       <div class="icon-preview-text"><strong>Icon Preview</strong><br>Enter an emoji or paste an image URL below</div>
     </div>
-
     <input type="hidden" id="editId">
-
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">App Name *</label>
@@ -442,37 +271,32 @@ tr:hover td { background: rgba(82,183,136,0.03); }
         </select>
       </div>
     </div>
-
     <div class="form-group">
       <label class="form-label">Short Description *</label>
       <textarea class="form-textarea" id="fDesc" placeholder="Describe what this app does"></textarea>
     </div>
-
     <div class="form-group">
       <label class="form-label">App URL *</label>
       <input type="url" class="form-input" id="fUrl" placeholder="https://…">
       <div class="form-help">Full URL where this app is hosted</div>
     </div>
-
     <div class="form-group">
       <label class="form-label">Icon / Image</label>
-      <input type="text" class="form-input" id="fIcon" placeholder="Emoji or image URL https://…" oninput="updateIconPreview()">
+      <input type="text" class="form-input" id="fIcon" placeholder="Emoji or image URL" oninput="updateIconPreview()">
       <div class="form-help">Leave empty — a smart initial icon will be auto-generated</div>
     </div>
-
     <div class="form-group">
       <label class="form-label">Date Added</label>
       <input type="date" class="form-input" id="fDate">
     </div>
-
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-      <button class="btn-save"   onclick="saveApp()">Save Application</button>
+      <button class="btn-save" onclick="saveApp()">Save Application</button>
     </div>
   </div>
 </div>
 
-<!-- ADMIN USER MODAL -->
+<!-- ADMIN MODAL -->
 <div class="modal-overlay" id="adminModal">
   <div class="modal">
     <div class="modal-head">
@@ -485,7 +309,7 @@ tr:hover td { background: rgba(82,183,136,0.03); }
     </div>
     <div class="form-group">
       <label class="form-label">Email</label>
-      <input type="email" class="form-input" id="aEmail" placeholder="priya@agri.kerala.gov.in">
+      <input type="email" class="form-input" id="aEmail" placeholder="email@agri.kerala.gov.in">
     </div>
     <div class="form-group">
       <label class="form-label">Password</label>
@@ -493,7 +317,7 @@ tr:hover td { background: rgba(82,183,136,0.03); }
     </div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeAdminModal()">Cancel</button>
-      <button class="btn-save"   onclick="saveAdmin()">Add Admin</button>
+      <button class="btn-save" onclick="saveAdmin()">Add Admin</button>
     </div>
   </div>
 </div>
@@ -506,7 +330,7 @@ tr:hover td { background: rgba(82,183,136,0.03); }
     <div class="confirm-msg" id="confirmMsg">This action cannot be undone.</div>
     <div class="confirm-btns">
       <button class="confirm-cancel" onclick="closeConfirm()">Cancel</button>
-      <button class="confirm-del"    onclick="confirmDelete()">Delete</button>
+      <button class="confirm-del" onclick="confirmDelete()">Delete</button>
     </div>
   </div>
 </div>
@@ -514,10 +338,16 @@ tr:hover td { background: rgba(82,183,136,0.03); }
 <!-- TOAST -->
 <div class="toast" id="toast"><span id="toastMsg"></span></div>
 
-<!-- DATA LAYER -->
 <script src="data.js"></script>
-
 <script>
+// ============================================================
+//  CONFIG CONSTANTS (used even if data.js is original version)
+// ============================================================
+const PANEL_API_URL   = "https://script.google.com/macros/s/AKfycbwTFslOra6l_N082o_aYOnKqTEEYeB0DiFtkAbz-QyPZ7qWRCBl8zeYocqQQmONGHAGpA/exec";
+const PANEL_WRITE_KEY = "agri-portal-write-2025";
+const PANEL_ADMIN_EMAIL    = "admin@agri.kerala.gov.in";
+const PANEL_ADMIN_PASSWORD = "AgriAdmin@2025";
+
 // ============================================================
 //  AUTH GUARD
 // ============================================================
@@ -526,7 +356,6 @@ tr:hover td { background: rgba(82,183,136,0.03); }
   if (!sess) { window.location.href = "login.html"; return; }
   try {
     const s = JSON.parse(sess);
-    // 8-hour session timeout
     if (Date.now() - s.ts > 8 * 60 * 60 * 1000) {
       localStorage.removeItem("agri_admin_session");
       window.location.href = "login.html";
@@ -535,7 +364,7 @@ tr:hover td { background: rgba(82,183,136,0.03); }
     const email = s.email || "";
     document.getElementById("adminAvatar").textContent = email[0].toUpperCase();
     document.getElementById("adminName").textContent   = s.name || email.split("@")[0];
-  } catch (e) {
+  } catch(e) {
     window.location.href = "login.html";
   }
 })();
@@ -548,24 +377,24 @@ function doLogout() {
 // ============================================================
 //  STATE
 // ============================================================
-let apps           = [];
+let apps = [];
 let deleteTargetId = null;
 
 // ============================================================
-//  INIT
+//  INIT — always clears stale localStorage so sheet is fetched fresh
 // ============================================================
 async function init() {
+  // FIX: Remove any stale local cache so loadApps() ALWAYS fetches
+  // from Google Sheet, not from a stale empty localStorage copy.
+  localStorage.removeItem("agri_portal_apps");
+
   apps = await loadApps();
   renderTable();
   renderAdminTable();
   updateStats();
-  setDefaultDate();
-}
-init();
-
-function setDefaultDate() {
   document.getElementById("fDate").value = new Date().toISOString().split("T")[0];
 }
+init();
 
 // ============================================================
 //  SECTION NAV
@@ -583,11 +412,10 @@ function showSection(name) {
 //  STATS
 // ============================================================
 function updateStats() {
-  document.getElementById("sTotal").textContent = apps.length;
-  const thisMonth = new Date().toISOString().slice(0, 7);
-  document.getElementById("sRecent").textContent = apps.filter(a => (a.date || a.created_date || "").startsWith(thisMonth)).length;
-  const cats = new Set(apps.map(a => a.category).filter(Boolean));
-  document.getElementById("sCats").textContent   = cats.size;
+  document.getElementById("sTotal").textContent  = apps.length;
+  const m = new Date().toISOString().slice(0, 7);
+  document.getElementById("sRecent").textContent = apps.filter(a => (a.date||"").startsWith(m)).length;
+  document.getElementById("sCats").textContent   = new Set(apps.map(a => a.category).filter(Boolean)).size;
   document.getElementById("sAdmins").textContent = getAdminList().length;
 }
 
@@ -595,7 +423,7 @@ function updateStats() {
 //  APP TABLE
 // ============================================================
 function renderTable() {
-  const q        = (document.getElementById("tableSearch").value || "").toLowerCase();
+  const q = (document.getElementById("tableSearch").value || "").toLowerCase();
   const filtered = apps.filter(a => {
     const name = (a.name || a.app_name || "").toLowerCase();
     const desc = (a.desc || a.description || "").toLowerCase();
@@ -613,7 +441,7 @@ function renderTable() {
     const icon     = app.icon || app.image || "";
     const cat      = app.category || "";
     const date     = app.date || app.created_date || "";
-    const catLabel = CAT_LABELS[cat] || (cat ? cat.charAt(0).toUpperCase() + cat.slice(1) : "");
+    const catLabel = (typeof CAT_LABELS !== "undefined" && CAT_LABELS[cat]) || cat;
     return `<tr>
       <td>${buildAdminIcon(icon, name)}</td>
       <td><div class="td-name">${esc(name)}</div></td>
@@ -623,8 +451,8 @@ function renderTable() {
       <td>${date ? formatDate(date) : ""}</td>
       <td>
         <div class="action-btns">
-          <button class="act-btn act-edit" onclick="editApp('${esc(app.id)}')">Edit</button>
-          <button class="act-btn act-del"  onclick="askDelete('${esc(app.id)}','${esc(name)}')">Delete</button>
+          <button class="act-btn act-edit" onclick="editApp(\'${esc(app.id)}\')">Edit</button>
+          <button class="act-btn act-del"  onclick="askDelete(\'${esc(app.id)}\',\'${esc(name)}\')">Delete</button>
         </div>
       </td>
     </tr>`;
@@ -633,17 +461,17 @@ function renderTable() {
 
 function buildAdminIcon(icon, name) {
   if (icon && icon.startsWith("http")) {
-    return `<div class="td-icon"><img src="${esc(icon)}" alt="${esc(name)}" onerror="this.parentNode.outerHTML='<div class=\\'td-icon icon-auto\\' style=\\'background:linear-gradient(135deg,${getIconColor(name).join(",")})\\'>${getInitials(name)}</div>'"></div>`;
+    return `<div class="td-icon"><img src="${esc(icon)}" alt="${esc(name)}"></div>`;
   }
-  if (icon && (icon.length <= 2 || icon.match(/\p{Emoji}/u))) {
+  if (icon && icon.length <= 2) {
     return `<div class="td-icon" style="font-size:20px;background:var(--sand)">${icon}</div>`;
   }
-  const [bg, fg] = getIconColor(name);
-  return `<div class="td-icon icon-auto" style="background:linear-gradient(135deg,${bg},${fg})">${getInitials(name)}</div>`;
+  const [bg, fg] = (typeof getIconColor === "function") ? getIconColor(name) : ["#2d6a4f","#52b788"];
+  return `<div class="td-icon icon-auto" style="background:linear-gradient(135deg,${bg},${fg})">${(typeof getInitials === "function") ? getInitials(name) : name[0]}</div>`;
 }
 
 // ============================================================
-//  APP MODAL — ADD / EDIT
+//  APP MODAL
 // ============================================================
 function openModal(app) {
   document.getElementById("appModal").classList.add("open");
@@ -654,7 +482,7 @@ function openModal(app) {
   document.getElementById("fUrl").value   = app ? (app.url  || "") : "";
   document.getElementById("fIcon").value  = app ? (app.icon || app.image || "") : "";
   document.getElementById("fCat").value   = app ? (app.category || "") : "";
-  document.getElementById("fDate").value  = app ? (app.date || app.created_date || new Date().toISOString().split("T")[0]) : new Date().toISOString().split("T")[0];
+  document.getElementById("fDate").value  = app ? (app.date || new Date().toISOString().split("T")[0]) : new Date().toISOString().split("T")[0];
   updateIconPreview();
 }
 function closeModal() { document.getElementById("appModal").classList.remove("open"); }
@@ -669,14 +497,14 @@ function updateIconPreview() {
   const name = document.getElementById("fName").value.trim() || "App";
   const box  = document.getElementById("iconPreview");
   if (icon.startsWith("http")) {
-    box.innerHTML = `<img src="${esc(icon)}" style="width:100%;height:100%;object-fit:cover;border-radius:10px" onerror="this.parentNode.innerHTML=getInitials('${esc(name)}')">`;
+    box.innerHTML = `<img src="${esc(icon)}" style="width:100%;height:100%;object-fit:cover;border-radius:10px">`;
     box.style.cssText = "";
-  } else if (icon && (icon.length <= 2 || icon.match(/\p{Emoji}/u))) {
+  } else if (icon && icon.length <= 2) {
     box.innerHTML = icon;
     box.style.background = "var(--sand)"; box.style.fontSize = "24px";
   } else {
-    const [bg, fg] = getIconColor(name);
-    box.innerHTML = getInitials(name);
+    const [bg, fg] = (typeof getIconColor === "function") ? getIconColor(name) : ["#2d6a4f","#52b788"];
+    box.innerHTML = (typeof getInitials === "function") ? getInitials(name) : name[0].toUpperCase();
     box.style.background = `linear-gradient(135deg,${bg},${fg})`;
     box.style.color = "#fff"; box.style.fontSize = "18px"; box.style.fontWeight = "700";
   }
@@ -693,9 +521,7 @@ function saveApp() {
   const id = document.getElementById("editId").value;
   const newApp = {
     id:       id || Date.now().toString(),
-    name,
-    desc,
-    url,
+    name, desc, url,
     icon:     document.getElementById("fIcon").value.trim(),
     category: document.getElementById("fCat").value,
     date:     document.getElementById("fDate").value,
@@ -708,7 +534,7 @@ function saveApp() {
     apps.push(newApp);
   }
 
-  saveApps(apps);   // saves to localStorage + syncs to Google Sheet (data.js)
+  saveApps(apps);
   closeModal();
   renderTable();
   updateStats();
@@ -723,14 +549,11 @@ function askDelete(id, name) {
   document.getElementById("confirmMsg").textContent = `"${name}" will be permanently removed.`;
   document.getElementById("confirmOverlay").classList.add("open");
 }
-function closeConfirm() {
-  document.getElementById("confirmOverlay").classList.remove("open");
-  deleteTargetId = null;
-}
+function closeConfirm() { document.getElementById("confirmOverlay").classList.remove("open"); deleteTargetId = null; }
 function confirmDelete() {
   if (!deleteTargetId) return;
   apps = apps.filter(a => a.id !== deleteTargetId);
-  saveApps(apps);   // saves to localStorage + syncs to Google Sheet (data.js)
+  saveApps(apps);
   closeConfirm();
   renderTable();
   updateStats();
@@ -740,85 +563,87 @@ function confirmDelete() {
 // ============================================================
 //  ADMIN USERS
 // ============================================================
-
-// Reads admin list from localStorage (falls back to default super admin)
 function getAdminList() {
   try {
     const raw = localStorage.getItem("agri_admin_users");
     if (raw) return JSON.parse(raw);
-  } catch (e) {}
-  return [{ email: CONFIG.ADMIN_EMAIL, password: CONFIG.ADMIN_PASSWORD, name: "Super Admin", role: "superadmin" }];
+  } catch(e) {}
+  return [{ email: PANEL_ADMIN_EMAIL, password: PANEL_ADMIN_PASSWORD, name: "Super Admin", role: "superadmin" }];
 }
 
-// ✅ FIXED: Saves to localStorage AND syncs to Google Sheet
 function saveAdminList(list) {
-  // 1. Save locally so getAdminList() and login.html can read it
+  // 1. Always save to localStorage
   localStorage.setItem("agri_admin_users", JSON.stringify(list));
 
-  // 2. Sync to Google Sheets Admins tab so any browser can authenticate
-  if (typeof CONFIG !== "undefined" && CONFIG.API_URL && CONFIG.WRITE_KEY) {
-    try {
-      fetch(CONFIG.API_URL, {
-        method:  "POST",
-        mode:    "no-cors",   // Google Apps Script exec URLs don't return CORS headers
-        headers: { "Content-Type": "text/plain" },
-        body: JSON.stringify({
-          action: "setAdmins",
-          admins: list,
-          key:    CONFIG.WRITE_KEY,
-        }),
-      });
-      // Fire-and-forget — the write IS processed server-side even with no-cors
-    } catch (e) {
-      console.warn("Admin sync to Google Sheet failed:", e);
-    }
+  // 2. Sync to Google Sheet Admins tab (fire-and-forget)
+  try {
+    fetch(PANEL_API_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain" },
+      body: JSON.stringify({ action: "setAdmins", admins: list, key: PANEL_WRITE_KEY }),
+    });
+  } catch(e) {
+    console.warn("Admin sheet sync failed:", e);
   }
 }
 
 function renderAdminTable() {
   const admins = getAdminList();
-  const tbody  = document.getElementById("adminTableBody");
-  tbody.innerHTML = admins.map((a, i) => `
+  document.getElementById("adminTableBody").innerHTML = admins.map((a, i) => `
     <tr>
       <td><strong>${esc(a.name || "Admin")}</strong></td>
       <td>${esc(a.email)}</td>
       <td><span class="cat-pill">${esc(a.role || "admin")}</span></td>
       <td>${i === 0
-        ? `<span style="color:var(--muted);font-size:12px">Cannot delete primary admin</span>`
+        ? `<span style="color:var(--muted);font-size:12px">Primary admin</span>`
         : `<button class="act-btn act-del" onclick="deleteAdmin(${i})">Remove</button>`}
       </td>
     </tr>`).join("");
 }
 
 function openAdminModal()  { document.getElementById("adminModal").classList.add("open"); }
-function closeAdminModal() { document.getElementById("adminModal").classList.remove("open"); }
-
-function saveAdmin() {
-  const name  = document.getElementById("aName").value.trim();
-  const email = document.getElementById("aEmail").value.trim();
-  const pass  = document.getElementById("aPass").value;
-
-  if (!email || !pass) { showToast("Email and password required", true); return; }
-
-  const admins = getAdminList();
-  if (admins.find(a => a.email === email)) { showToast("Admin already exists", true); return; }
-
-  admins.push({ name, email, password: pass, role: "admin" });
-  saveAdminList(admins);    // ✅ now saves to localStorage + Google Sheet
-  closeAdminModal();
-  renderAdminTable();
-  updateStats();
-  showToast("Admin user added!");
-
+function closeAdminModal() {
+  document.getElementById("adminModal").classList.remove("open");
   document.getElementById("aName").value  = "";
   document.getElementById("aEmail").value = "";
   document.getElementById("aPass").value  = "";
 }
 
+function saveAdmin() {
+  const name  = document.getElementById("aName").value.trim();
+  const email = document.getElementById("aEmail").value.trim();
+  const pass  = document.getElementById("aPass").value.trim();
+
+  if (!email)  { showToast("Email is required", true);    return; }
+  if (!pass)   { showToast("Password is required", true); return; }
+
+  const admins  = getAdminList();
+  const existing = admins.findIndex(a => a.email === email);
+
+  if (existing >= 0) {
+    // FIX: Update existing admin instead of blocking with "already exists"
+    admins[existing].password = pass;
+    if (name) admins[existing].name = name;
+    saveAdminList(admins);
+    closeAdminModal();
+    renderAdminTable();
+    updateStats();
+    showToast("Admin password updated!");
+  } else {
+    admins.push({ name: name || email, email, password: pass, role: "admin" });
+    saveAdminList(admins);
+    closeAdminModal();
+    renderAdminTable();
+    updateStats();
+    showToast("Admin user added!");
+  }
+}
+
 function deleteAdmin(idx) {
   const admins = getAdminList();
   admins.splice(idx, 1);
-  saveAdminList(admins);    // ✅ syncs to Google Sheet
+  saveAdminList(admins);
   renderAdminTable();
   updateStats();
   showToast("Admin removed");
@@ -829,8 +654,7 @@ function deleteAdmin(idx) {
 // ============================================================
 function showToast(msg, isErr) {
   const t = document.getElementById("toast");
-  const m = document.getElementById("toastMsg");
-  m.textContent      = msg;
+  document.getElementById("toastMsg").textContent = msg;
   t.style.background = isErr ? "#dc2626" : "var(--forest)";
   t.classList.add("show");
   setTimeout(() => t.classList.remove("show"), 3000);
@@ -840,18 +664,20 @@ function showToast(msg, isErr) {
 //  HELPERS
 // ============================================================
 function esc(s) {
-  return String(s)
-    .replace(/&/g,"&amp;").replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/\'/g,"&#39;");
 }
 function formatDate(d) {
-  try { return new Date(d).toLocaleDateString("en-IN", { day:"numeric", month:"short", year:"numeric" }); }
-  catch { return d; }
+  try { return new Date(d).toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"}); }
+  catch(e) { return d; }
 }
 
-// Close modals when clicking outside
-document.getElementById("appModal").addEventListener("click",   function(e) { if (e.target === this) closeModal(); });
-document.getElementById("adminModal").addEventListener("click",  function(e) { if (e.target === this) closeAdminModal(); });
+document.getElementById("appModal").addEventListener("click",  function(e){ if(e.target===this) closeModal(); });
+document.getElementById("adminModal").addEventListener("click", function(e){ if(e.target===this) closeAdminModal(); });
 </script>
 </body>
-</html>
+</html>'''
+
+with open('/home/user/agri-portal-fix/panel.html', 'w') as f:
+    f.write(panel_html)
+
+print(f"Written {len(panel_html)} bytes")
