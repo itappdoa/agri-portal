@@ -17,7 +17,7 @@ const CONFIG = {
   SHEET_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQn5xVj61E_63PvxkFHfNfq3Pg-XpprcO2bEnonzQZv3OoQgvAscBWL_7wltvIsKRyI_WF85mk5Yrm4/pub?output=csv",
 
   // Google Apps Script Web App URL (deployed from Code.gs)
-  API_URL: "https://script.google.com/macros/s/AKfycbwTFslOra6l_N082o_aYOnKqTEEYeB0DiFtkAbz-QyPZ7qWRCBl8zeYocqQQmONGHAGpA/exec",
+  API_URL: "https://script.google.com/macros/s/AKfycbxhTkSROu8tBH6_vUJZiV4JU3s5iyy1fzqyaMAD-qGRksgqB0c_NlS5aTP2LrRDxBaatQ/exec",
 
   // ⚠️ IMPORTANT: This WRITE_KEY must exactly match WRITE_KEY in Code.gs
   WRITE_KEY: "agri-portal-write-2025",
