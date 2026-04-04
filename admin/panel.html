@@ -707,7 +707,7 @@ function getAdminList() {
   if (saved) try { return JSON.parse(saved); } catch(e) {}
   return [{ name:"Super Admin", email: CONFIG.ADMIN_EMAIL, password: CONFIG.ADMIN_PASSWORD, role:"superadmin" }];
 }
-function saveAdminList(list) { localStorage.setItem("agri_admin_users", JSON.stringify(list)); }
+function saveAdminList(list) { fetch(API_URL, { method: "POST", body: JSON.stringify(data) }); }
 
 function renderAdminTable() {
   const admins = getAdminList();
